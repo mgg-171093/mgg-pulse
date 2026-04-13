@@ -1,0 +1,266 @@
+You are a senior software architect and UI/UX engineer.
+
+Your task is to design and generate a complete Windows desktop application called **MGG Pulse**.
+
+This application is a configurable, rule-based user activity simulator to prevent session timeouts in remote environments.
+
+---
+
+# 🧱 ARCHITECTURE
+
+Use:
+
+* Language: C#
+* Framework: .NET 8
+* UI: WinUI 3 (Windows App SDK)
+* Pattern: MVVM
+* Architecture: Hexagonal (Ports & Adapters) + SOLID principles
+
+---
+
+## Project Structure
+
+Create a clean solution with:
+
+* MGG.Pulse.Domain
+* MGG.Pulse.Application
+* MGG.Pulse.Infrastructure
+* MGG.Pulse.UI
+
+---
+
+## Core Concepts
+
+The app must be built as a **rule-based simulation engine**, not a simple loop.
+
+---
+
+# 🧠 DOMAIN LAYER
+
+Define:
+
+Entities:
+
+* SimulationConfig
+* SimulationState
+
+Value Objects:
+
+* IntervalRange (min/max)
+
+Enums:
+
+* SimulationMode (Intelligent, Aggressive, Manual)
+* InputType (Mouse, Keyboard, Combined)
+
+---
+
+# 🔌 PORTS (INTERFACES)
+
+* IInputSimulator
+* IIdleDetector
+* ILoggerService
+* IConfigRepository
+
+---
+
+# ⚙️ APPLICATION LAYER
+
+Implement use cases:
+
+* StartSimulationUseCase
+* StopSimulationUseCase
+* EvaluateSimulationCycle
+
+---
+
+## Rule Engine (CRITICAL)
+
+Create:
+
+* IRule interface
+* Implement rules:
+
+  * IdleRule
+  * AggressiveModeRule
+  * IntervalRule
+
+Create RuleEngine that evaluates all rules.
+
+---
+
+## Execution Engine
+
+Implement a background worker using Task + CancellationToken:
+
+Loop:
+
+1. Wait for next interval (randomized if configured)
+2. Evaluate rules
+3. Execute simulation if allowed
+
+---
+
+# 🧩 INFRASTRUCTURE
+
+Implement:
+
+* Win32InputSimulator (SendInput)
+* Win32IdleDetector (GetLastInputInfo)
+* JsonConfigRepository
+* FileLoggerService
+
+---
+
+# 🎨 UI DESIGN SYSTEM (VERY IMPORTANT)
+
+Use a **Material Design inspired system adapted to WinUI 3**
+
+---
+
+## Theme Support
+
+Implement:
+
+* Dark mode (default)
+* Light mode (optional)
+* Runtime switch
+
+---
+
+## Base Colors
+
+### Dark Theme
+
+* Background: #0F111A
+* Surface: #1A1D2E
+* SurfaceVariant: #23263A
+* Border: #2A2E45
+
+Text:
+
+* Primary: #FFFFFF
+* Secondary: #B0B3C0
+* Disabled: #6B6F80
+
+---
+
+### Light Theme
+
+* Background: #F5F7FA
+* Surface: #FFFFFF
+* SurfaceVariant: #EDEFF5
+* Border: #D0D4E0
+
+Text:
+
+* Primary: #1A1A1A
+* Secondary: #5C5F70
+
+---
+
+## Primary Color (MGG Pulse)
+
+Use Material Green:
+
+* Primary: #4CAF50 (Green 500)
+* Hover: #66BB6A (Green 400)
+* Active: #388E3C (Green 600)
+
+Use color ONLY for:
+
+* Primary buttons
+* Toggles
+* Status indicators
+
+---
+
+## UI Style
+
+* Minimalistic
+* Clean spacing (4, 8, 16, 24, 32 scale)
+* Rounded corners: 8px
+* Subtle shadows
+* Very light glow on primary actions
+
+---
+
+# 🖥️ UI STRUCTURE
+
+## Main Dashboard
+
+Display:
+
+* Status (Active / Inactive)
+* Current idle time
+* Last simulated action
+* Next scheduled execution
+
+---
+
+## Controls
+
+* Start / Stop button (primary)
+* Mode selector (Intelligent / Aggressive / Manual)
+
+---
+
+## Configuration Panel
+
+* Input type selection:
+
+  * Mouse
+  * Keyboard
+  * Combined
+
+* Interval:
+
+  * Fixed
+  * Random range (min/max)
+
+---
+
+## Stealth Options
+
+* Start with Windows
+* Start minimized
+* Minimize to tray
+
+---
+
+## Logs Panel
+
+* Real-time log viewer
+* Log levels:
+
+  * Minimal
+  * Normal
+  * Verbose
+
+---
+
+# 🧠 BEHAVIOR RULES
+
+* NEVER simulate input if user is active (Intelligent mode)
+* Use randomized intervals if configured
+* Simulate minimal, non-intrusive input
+
+---
+
+# 🧪 SAFE SIMULATION
+
+* Mouse: 1–2px movement
+* Keyboard: Shift / Ctrl
+
+---
+
+# 🎯 GOAL
+
+Generate:
+
+* Clean, production-ready code
+* Strong separation of concerns
+* Highly maintainable structure
+* Visually polished UI
+
+Do NOT oversimplify. Do NOT mix responsibilities.

@@ -1,0 +1,72 @@
+schema: spec-driven
+
+context: |
+  Project: MGG Pulse — Windows desktop app, rule-based user activity simulator to prevent session timeouts.
+  Stack: C# / .NET 8 / WinUI 3 (Windows App SDK) / MVVM (CommunityToolkit.Mvvm)
+  Architecture: Hexagonal (Ports & Adapters) + SOLID
+  Projects: MGG.Pulse.Domain | MGG.Pulse.Application | MGG.Pulse.Infrastructure | MGG.Pulse.UI | MGG.Pulse.Tests.Unit
+  Testing: xUnit + Moq — unit tests for Domain and Application layers only (no UI/Win32 tests)
+  Config persistence: %AppData%\MGG\Pulse\config.json
+  Distribution: personal use, no installer for V1
+  Logo: assets/branding/logo.png — easy to replace, single source of truth
+
+strict_tdd: true
+
+testing:
+  runner:
+    framework: xUnit
+    command: dotnet test MGG.Pulse.Tests.Unit
+  layers:
+    unit:
+      available: true
+      tool: xUnit + Moq
+    integration:
+      available: false
+      note: no integration test project planned for V1
+    e2e:
+      available: false
+      note: WinUI 3 UI automation out of scope for V1
+  coverage:
+    available: true
+    command: dotnet test --collect:"XPlat Code Coverage"
+  quality:
+    linter:
+      available: true
+      command: dotnet build (Roslyn analyzers via .editorconfig)
+    type_checker:
+      available: true
+      command: dotnet build (C# compiler)
+    formatter:
+      available: true
+      command: dotnet format
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Identify affected layers (Domain / Application / Infrastructure / UI)
+    - Flag any Win32 API dependency explicitly
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Separate Domain specs from Infrastructure specs
+  design:
+    - Include sequence diagrams for complex flows (RuleEngine, CycleOrchestrator)
+    - Document Port vs Adapter decisions explicitly
+    - Document architecture decisions with rationale
+  tasks:
+    - Group tasks by layer (Domain → Application → Infrastructure → UI)
+    - Use hierarchical numbering (1.1, 1.2, etc.)
+    - Keep tasks small enough to complete in one session
+    - Always add corresponding unit test task alongside implementation task
+  apply:
+    - Follow existing naming conventions (PascalCase for types, _camelCase for private fields)
+    - Load relevant coding skills: csharp-conventions, winui3-patterns, xunit-testing
+    - Never mix layers — Domain has zero external dependencies
+    - Use CancellationToken for all async operations in Application layer
+  verify:
+    - Run dotnet test MGG.Pulse.Tests.Unit
+    - Compare implementation against every spec scenario
+    - Verify no Domain project references Application or Infrastructure
+  archive:
+    - Warn before merging destructive deltas (large removals)
+    - Update openspec/specs/ with final merged spec

@@ -1,0 +1,72 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,csx}]
+# C# conventions — matches AGENTS.md coding standards
+indent_size = 4
+
+# Naming: private fields
+dotnet_naming_rule.private_fields.symbols = private_fields
+dotnet_naming_rule.private_fields.style = camel_case_prefix_underscore
+dotnet_naming_rule.private_fields.severity = suggestion
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.camel_case_prefix_underscore.required_prefix = _
+dotnet_naming_style.camel_case_prefix_underscore.capitalization = camel_case
+
+# Async methods must have CancellationToken
+dotnet_diagnostic.CA2016.severity = warning
+
+# Nullable
+dotnet_diagnostic.CS8600.severity = error
+dotnet_diagnostic.CS8601.severity = error
+dotnet_diagnostic.CS8602.severity = error
+dotnet_diagnostic.CS8603.severity = error
+dotnet_diagnostic.CS8604.severity = error
+dotnet_diagnostic.CS8618.severity = error
+
+# Unused
+dotnet_diagnostic.CS0168.severity = warning
+dotnet_diagnostic.CS0219.severity = warning
+
+# Enforce 'var' for obvious types
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# Braces always
+csharp_prefer_braces = true:warning
+
+# Expression-bodied members
+csharp_style_expression_bodied_methods = false:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+
+# Accessibility modifiers required
+dotnet_style_require_accessibility_modifiers = always:warning
+
+# 'this.' qualifiers — prefer explicit
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+[*.{xml,xaml}]
+indent_size = 4
+
+[*.{json,yaml,yml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{csproj,slnx,targets,props}]
+indent_size = 2

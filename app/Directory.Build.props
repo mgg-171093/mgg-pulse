@@ -1,0 +1,28 @@
+<Project>
+  <!--
+    Directory.Build.props — applies to ALL projects under app/
+    See: https://learn.microsoft.com/en-us/visualstudio/msbuild/customize-by-directory
+  -->
+  <PropertyGroup>
+    <!-- Common metadata -->
+    <Company>MGG</Company>
+    <Product>MGG Pulse</Product>
+    <Copyright>Copyright © 2026 MGG. All rights reserved.</Copyright>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+
+    <!-- C# language defaults (can be overridden per project) -->
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Treat warnings as errors in Release builds -->
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+
+    <!-- Enable Roslyn analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+</Project>

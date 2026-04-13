@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MGG.Pulse.Application/MGG.Pulse.Application.csproj" />
+    <Project Path="src/MGG.Pulse.Domain/MGG.Pulse.Domain.csproj" />
+    <Project Path="src/MGG.Pulse.Infrastructure/MGG.Pulse.Infrastructure.csproj" />
+    <Project Path="src/MGG.Pulse.UI/MGG.Pulse.UI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
