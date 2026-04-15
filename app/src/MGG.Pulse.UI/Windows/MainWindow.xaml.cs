@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
+using WinRT.Interop;
 
 namespace MGG.Pulse.UI.Windows;
 
@@ -21,8 +22,14 @@ public sealed partial class MainWindow : Window
     private void ConfigureWindow()
     {
         Title = "MGG Pulse";
-        AppWindow.Resize(new SizeInt32(420, 640));
+        AppWindow.Resize(new SizeInt32(800, 600));
         AppWindow.SetPresenter(AppWindowPresenterKind.Default);
+
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "icon.ico");
+        if (File.Exists(iconPath))
+        {
+            AppWindow.SetIcon(iconPath);
+        }
 
         if (AppWindowTitleBar.IsCustomizationSupported())
         {
@@ -35,8 +42,8 @@ public sealed partial class MainWindow : Window
     private void CenterOnScreen()
     {
         var displayArea = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Primary);
-        var x = (displayArea.WorkArea.Width - 420) / 2;
-        var y = (displayArea.WorkArea.Height - 640) / 2;
+        var x = (displayArea.WorkArea.Width - 800) / 2;
+        var y = (displayArea.WorkArea.Height - 600) / 2;
         AppWindow.Move(new PointInt32(x, y));
     }
 

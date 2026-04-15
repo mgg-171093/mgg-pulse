@@ -1,8 +1,6 @@
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics;
 
@@ -27,7 +25,7 @@ public sealed partial class SplashWindow : Window
     private void ConfigureWindow()
     {
         var appWindow = AppWindow;
-        appWindow.Resize(new SizeInt32(400, 300));
+        appWindow.Resize(new SizeInt32(600, 750));
         appWindow.SetPresenter(AppWindowPresenterKind.Default);
 
         if (AppWindowTitleBar.IsCustomizationSupported())
@@ -44,8 +42,8 @@ public sealed partial class SplashWindow : Window
     private void CenterOnScreen()
     {
         var displayArea = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Primary);
-        var x = (displayArea.WorkArea.Width - 400) / 2;
-        var y = (displayArea.WorkArea.Height - 300) / 2;
+        var x = (displayArea.WorkArea.Width - 600) / 2;
+        var y = (displayArea.WorkArea.Height - 750) / 2;
         AppWindow.Move(new PointInt32(x, y));
     }
 
@@ -59,9 +57,6 @@ public sealed partial class SplashWindow : Window
         _firstActivation = false;
         Activated -= OnFirstActivated;
 
-        // Show installed version
-        VersionText.Text = $"v{GetInstalledVersion()}";
-
         // Load logo
         try
         {
@@ -74,37 +69,7 @@ public sealed partial class SplashWindow : Window
         }
         catch { /* no logo, continue */ }
 
-        await AnimateSplashAsync();
-    }
-
-    private async Task AnimateSplashAsync()
-    {
-        // Fade in logo + text panel
-        var storyboard = new Storyboard();
-
-        var fadeIn = new DoubleAnimation
-        {
-            From = 0, To = 1,
-            Duration = new Duration(TimeSpan.FromMilliseconds(800)),
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-        };
-        Storyboard.SetTarget(fadeIn, LogoImage);
-        Storyboard.SetTargetProperty(fadeIn, "Opacity");
-        storyboard.Children.Add(fadeIn);
-
-        var textFade = new DoubleAnimation
-        {
-            From = 0, To = 1,
-            Duration = new Duration(TimeSpan.FromMilliseconds(800)),
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-        };
-        Storyboard.SetTarget(textFade, TextPanel);
-        Storyboard.SetTargetProperty(textFade, "Opacity");
-        storyboard.Children.Add(textFade);
-
-        storyboard.Begin();
-
-        await Task.Delay(400);
+        await Task.Delay(200);
     }
 
     /// <summary>
@@ -116,7 +81,6 @@ public sealed partial class SplashWindow : Window
         DispatcherQueue.TryEnqueue(() =>
         {
             InitProgress.Value = progress;
-            StatusText.Text = statusMessage;
         });
         await Task.Delay(150);
     }
@@ -135,10 +99,4 @@ public sealed partial class SplashWindow : Window
         }
     }
 
-    private static string GetInstalledVersion()
-    {
-        var asm = System.Reflection.Assembly.GetExecutingAssembly();
-        var ver = asm.GetName().Version ?? new Version(0, 1, 0);
-        return $"{ver.Major}.{ver.Minor}.{ver.Build}";
-    }
 }
