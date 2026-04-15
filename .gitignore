@@ -36,6 +36,7 @@ bld/
 
 # ── Visual Studio ─────────────────────────────────────────────
 .vs/
+.vscode/
 *.vcxproj.filters
 *.vcxproj.user
 *.VC.db
@@ -94,6 +95,12 @@ $RECYCLE.BIN/
 *.swp
 *~
 .sass-cache/
+app/build_diag.log
+app/build_diag.binlog
+app/src/MGG.Pulse.UI/xaml_err.txt
+app/src/MGG.Pulse.UI/xaml_out.txt
+app/src/MGG.Pulse.UI/build_log.txt
+app/src/MGG.Pulse.UI/logs.json
 
 # ── Secrets / environment ─────────────────────────────────────
 *.env
