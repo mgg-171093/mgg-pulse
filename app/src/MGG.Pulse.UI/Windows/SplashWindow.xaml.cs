@@ -10,19 +10,24 @@ namespace MGG.Pulse.UI.Windows;
 
 public sealed partial class SplashWindow : Window
 {
+    /// <summary>Spec requirement: splash MUST be visible for at least 5 seconds.</summary>
+    private const int MinimumDisplayMs = 5000;
+
+    private readonly DateTimeOffset _shownAt;
+    private bool _firstActivation = true;
+
     public SplashWindow()
     {
         InitializeComponent();
+        _shownAt = DateTimeOffset.UtcNow;
         ConfigureWindow();
         Activated += OnFirstActivated;
     }
 
-    private bool _firstActivation = true;
-
     private void ConfigureWindow()
     {
         var appWindow = AppWindow;
-        appWindow.Resize(new SizeInt32(400, 280));
+        appWindow.Resize(new SizeInt32(400, 300));
         appWindow.SetPresenter(AppWindowPresenterKind.Default);
 
         if (AppWindowTitleBar.IsCustomizationSupported())
@@ -40,7 +45,7 @@ public sealed partial class SplashWindow : Window
     {
         var displayArea = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Primary);
         var x = (displayArea.WorkArea.Width - 400) / 2;
-        var y = (displayArea.WorkArea.Height - 280) / 2;
+        var y = (displayArea.WorkArea.Height - 300) / 2;
         AppWindow.Move(new PointInt32(x, y));
     }
 
@@ -49,6 +54,9 @@ public sealed partial class SplashWindow : Window
         if (!_firstActivation) return;
         _firstActivation = false;
         Activated -= OnFirstActivated;
+
+        // Show installed version
+        VersionText.Text = $"v{GetInstalledVersion()}";
 
         // Load logo
         try
@@ -68,23 +76,21 @@ public sealed partial class SplashWindow : Window
     private async Task AnimateSplashAsync()
     {
         // Fade in logo + text panel
+        var storyboard = new Storyboard();
+
         var fadeIn = new DoubleAnimation
         {
-            From = 0,
-            To = 1,
+            From = 0, To = 1,
             Duration = new Duration(TimeSpan.FromMilliseconds(800)),
             EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
         };
-
-        var storyboard = new Storyboard();
         Storyboard.SetTarget(fadeIn, LogoImage);
         Storyboard.SetTargetProperty(fadeIn, "Opacity");
         storyboard.Children.Add(fadeIn);
 
         var textFade = new DoubleAnimation
         {
-            From = 0,
-            To = 1,
+            From = 0, To = 1,
             Duration = new Duration(TimeSpan.FromMilliseconds(800)),
             EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
         };
@@ -97,6 +103,10 @@ public sealed partial class SplashWindow : Window
         await Task.Delay(400);
     }
 
+    /// <summary>
+    /// Advances the progress bar. Should be called from App.xaml.cs during initialization.
+    /// After all advances, call <see cref="WaitForMinimumHoldAsync"/> before closing.
+    /// </summary>
     public async Task AdvanceProgressAsync(double progress, string statusMessage)
     {
         DispatcherQueue.TryEnqueue(() =>
@@ -105,5 +115,26 @@ public sealed partial class SplashWindow : Window
             StatusText.Text = statusMessage;
         });
         await Task.Delay(150);
+    }
+
+    /// <summary>
+    /// Waits until the 5-second minimum display time has elapsed.
+    /// Call this after all initialization is complete, before closing the splash.
+    /// </summary>
+    public async Task WaitForMinimumHoldAsync()
+    {
+        var elapsed = (DateTimeOffset.UtcNow - _shownAt).TotalMilliseconds;
+        var remaining = MinimumDisplayMs - elapsed;
+        if (remaining > 0)
+        {
+            await Task.Delay((int)remaining);
+        }
+    }
+
+    private static string GetInstalledVersion()
+    {
+        var asm = System.Reflection.Assembly.GetExecutingAssembly();
+        var ver = asm.GetName().Version ?? new Version(0, 1, 0);
+        return $"{ver.Major}.{ver.Minor}.{ver.Build}";
     }
 }

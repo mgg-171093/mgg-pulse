@@ -27,9 +27,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\assets\branding\logo.png">
+    <!-- Branding assets — logo-main is the canonical app logo (replaces legacy logo.png) -->
+    <Content Include="..\..\assets\branding\logo-main.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Assets\logo.png</Link>
+    </Content>
+    <Content Include="..\..\assets\branding\logo-sidebar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Assets\logo-sidebar.png</Link>
+    </Content>
+    <Content Include="..\..\assets\branding\icon-app.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Assets\icon-app.png</Link>
+    </Content>
+    <Content Include="..\..\assets\branding\banner-readme.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Assets\banner-readme.png</Link>
     </Content>
   </ItemGroup>
 </Project>

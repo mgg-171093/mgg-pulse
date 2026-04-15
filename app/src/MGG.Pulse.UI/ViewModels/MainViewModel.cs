@@ -81,6 +81,9 @@ public partial class MainViewModel : ObservableObject
 
     public Microsoft.UI.Dispatching.DispatcherQueue? DispatcherQueue { get; set; }
 
+    /// <summary>Fired when the simulation starts and MinimizeToTray is enabled — window should hide itself.</summary>
+    public event Action? HideWindowRequested;
+
     public MainViewModel(
         StartSimulationUseCase startUseCase,
         StopSimulationUseCase stopUseCase,
@@ -121,6 +124,11 @@ public partial class MainViewModel : ObservableObject
         _orchestrator.NextScheduledUpdated += _onNextScheduledUpdated;
 
         AddLogEntry("Simulation started.");
+
+        if (MinimizeToTray)
+        {
+            HideWindowRequested?.Invoke();
+        }
 
         _simulationTask = _startUseCase.ExecuteAsync(_config, _cts.Token)
             .ContinueWith(t =>
@@ -234,9 +242,14 @@ public partial class MainViewModel : ObservableObject
     private void UpdateConfigFromProperties()
     {
         if (Enum.TryParse<SimulationMode>(SelectedMode, out var mode))
+        {
             _config.UpdateMode(mode);
+        }
+
         if (Enum.TryParse<InputType>(SelectedInputType, out var inputType))
+        {
             _config.UpdateInputType(inputType);
+        }
 
         var min = Math.Max(1, IntervalMin);
         var max = Math.Max(min, IntervalMax);
