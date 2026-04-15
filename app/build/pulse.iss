@@ -22,9 +22,9 @@
 AppName=MGG Pulse
 AppVersion={#AppVersion}
 AppPublisher=MGG Dev
-AppPublisherURL=https://github.com/mgg-dev/mgg-pulse
-AppSupportURL=https://github.com/mgg-dev/mgg-pulse/issues
-AppUpdatesURL=https://github.com/mgg-dev/mgg-pulse/releases
+AppPublisherURL=https://github.com/mgg-171093/mgg-pulse
+AppSupportURL=https://github.com/mgg-171093/mgg-pulse/issues
+AppUpdatesURL=https://github.com/mgg-171093/mgg-pulse/releases
 DefaultDirName={localappdata}\MGG Pulse
 DefaultGroupName=MGG Pulse
 OutputDir={#OutputDir}

@@ -1,6 +1,6 @@
 ![MGG Pulse](app/assets/branding/banner-readme.png)
 
-[![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square)](./app/build/latest.json)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=flat-square)](./app/build/latest.json)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![WinUI 3](https://img.shields.io/badge/WinUI_3-Windows_App_SDK_1.5-0078D4?style=flat-square&logo=windows&logoColor=white)](https://learn.microsoft.com/en-us/windows/apps/winui/winui3/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
@@ -95,7 +95,7 @@ graph TB
 
 > **Prerequisites**: .NET 8 Desktop Runtime, Windows App SDK 1.5+ (bundled in installer).
 
-1. Download `MGGPulse-Setup-1.0.0.exe` from [Releases](https://github.com/manugomezf/mgg-pulse/releases)
+1. Download `MGGPulse-Setup-1.1.0.exe` from [Releases](https://github.com/mgg-171093/mgg-pulse/releases)
 2. Run the installer — **no admin / UAC required** (installs per-user by default)
 3. The app installs to `%LocalAppData%\MGG\Pulse\`
 4. Launch **MGG Pulse** from the Start Menu or Desktop shortcut
@@ -153,7 +153,7 @@ The script (`app/build/build.ps1`):
 ### 1 — Clone the repo
 
 ```bash
-git clone https://github.com/manugomezf/mgg-pulse.git
+git clone https://github.com/mgg-171093/mgg-pulse.git
 cd mgg-pulse
 ```
 
@@ -241,7 +241,7 @@ Tests cover Domain and Application layers using **xUnit + Moq**. Infrastructure 
 | Config file | `%AppData%\MGG\Pulse\config.json` |
 | Log file | `%LocalAppData%\MGG\Pulse\logs\pulse.log` |
 | App install dir | `%LocalAppData%\MGG\Pulse\` (installer default) |
-| Update manifest | `https://github.com/manugomezf/mgg-pulse/releases/latest/download/latest.json` |
+| Update manifest | `https://github.com/mgg-171093/mgg-pulse/releases/latest/download/latest.json` |
 | Downloaded installer | `%TEMP%\MGGPulse-Setup-{version}.exe` (auto-deleted after install) |
 
 Config in `%AppData%` is **never overwritten on upgrade** — your settings survive updates.

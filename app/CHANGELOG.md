@@ -8,6 +8,15 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+- Shell navigation with dedicated Dashboard, Settings, and About surfaces.
+- Auto-update plumbing with `latest.json` checks, background hosted timer, and installer handoff use case.
+- Windows installer pipeline with `build.ps1`, `pulse.iss`, and branding/icon generation tooling.
+
+### Changed
+- Splash flow and branding assets aligned to the packify release model.
+- Project and app documentation expanded (`README`, `app/README`, `ARCHITECTURE`) for release operations.
+
 ---
 
 ## [1.0.0] — 2026-04-08
@@ -26,5 +35,5 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-[Unreleased]: https://github.com/manugomezf/mgg-pulse/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/manugomezf/mgg-pulse/releases/tag/v1.0.0
+[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.0.0

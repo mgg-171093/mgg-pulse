@@ -211,8 +211,8 @@ build/build.ps1 (from app/ directory)
 
 ```json
 {
-  "version": "1.0.0",
-  "url": "https://github.com/manugomezf/mgg-pulse/releases/download/v1.0.0/MGGPulse-Setup-1.0.0.exe",
+  "version": "1.1.0",
+  "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.1.0/MGGPulse-Setup-1.1.0.exe",
   "sha256": "<lowercase hex SHA-256 of the .exe>",
   "notes": "Short release notes shown to the user."
 }
