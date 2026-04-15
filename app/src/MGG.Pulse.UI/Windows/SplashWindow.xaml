@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Width="400" Height="280">
+    <Grid Width="600" Height="750">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#1A2336" Offset="0.0" />
@@ -13,55 +13,23 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="24">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="28">
             <Image
                 x:Name="LogoImage"
-                Width="80"
-                Height="80"
+                Width="400"
+                Height="450"
                 HorizontalAlignment="Center"
-                Opacity="0">
-                <Image.RenderTransform>
-                    <ScaleTransform x:Name="LogoScale" ScaleX="0.8" ScaleY="0.8" />
-                </Image.RenderTransform>
-            </Image>
-
-            <StackPanel x:Name="TextPanel" HorizontalAlignment="Center" Spacing="4" Opacity="0">
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    Foreground="White"
-                    FontSize="24"
-                    FontWeight="Bold"
-                    Text="MGG Pulse" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    Foreground="#B0B3C0"
-                    FontSize="12"
-                    Text="Activity Simulator" />
-            </StackPanel>
+                Stretch="Uniform" />
 
             <ProgressBar
                 x:Name="InitProgress"
-                Width="240"
-                Height="3"
+                Width="260"
+                Height="4"
                 Minimum="0"
                 Maximum="100"
                 Value="0"
                 Background="#2A2E45"
                 Foreground="#4CAF50" />
-
-            <TextBlock
-                x:Name="StatusText"
-                HorizontalAlignment="Center"
-                Foreground="#6B6F80"
-                FontSize="11"
-                Text="Initializing..." />
-
-            <TextBlock
-                x:Name="VersionText"
-                Margin="0,4,0,0"
-                HorizontalAlignment="Center"
-                Foreground="#4B4F60"
-                FontSize="10" />
         </StackPanel>
     </Grid>
 </Window>

@@ -10,6 +10,7 @@ using MGG.Pulse.Infrastructure.Tray;
 using MGG.Pulse.Infrastructure.Update;
 using MGG.Pulse.Infrastructure.Win32;
 using MGG.Pulse.UI.Diagnostics;
+using MGG.Pulse.UI.Services;
 using MGG.Pulse.UI.ViewModels;
 using MGG.Pulse.UI.Windows;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,8 @@ public partial class App : Microsoft.UI.Xaml.Application
             _splashWindow.Activate();
 
             await InitializeServicesWithProgress();
+
+            ThemeService.ApplyTheme(ThemeService.GetSavedTheme());
 
             var config = await Services.GetRequiredService<IConfigRepository>().LoadAsync();
 
@@ -253,6 +256,8 @@ public partial class App : Microsoft.UI.Xaml.Application
         // UI — singleton so App and all pages share the same instances
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<ShellViewModel>();
+        services.AddSingleton<LogsViewModel>();
+        services.AddSingleton<AppearanceViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<AboutViewModel>();
 

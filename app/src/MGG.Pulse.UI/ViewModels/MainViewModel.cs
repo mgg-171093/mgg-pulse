@@ -24,7 +24,6 @@ public partial class MainViewModel : ObservableObject
     private Task? _simulationTask;
 
     private Action<Domain.ValueObjects.SimulationAction>? _onActionExecuted;
-    private Action<Domain.ValueObjects.SimulationAction>? _logHandler;
     private Action<TimeSpan>? _onIdleTimeUpdated;
     private Action<DateTime>? _onNextScheduledUpdated;
 
@@ -76,9 +75,6 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _minimizeToTray = true;
 
-    [ObservableProperty]
-    private string _logText = string.Empty;
-
     public Microsoft.UI.Dispatching.DispatcherQueue? DispatcherQueue { get; set; }
 
     /// <summary>Fired when the simulation starts and MinimizeToTray is enabled — window should hide itself.</summary>
@@ -114,16 +110,12 @@ public partial class MainViewModel : ObservableObject
         _trayService.SetTooltip("MGG Pulse — Active");
 
         _onActionExecuted = UpdateLastAction;
-        _logHandler = a => AddLogEntry($"{a.InputType} at {a.ExecutedAt:HH:mm:ss}");
         _onIdleTimeUpdated = UpdateIdleTime;
         _onNextScheduledUpdated = UpdateNextScheduled;
 
         _orchestrator.ActionExecuted += _onActionExecuted;
-        _orchestrator.ActionExecuted += _logHandler;
         _orchestrator.IdleTimeUpdated += _onIdleTimeUpdated;
         _orchestrator.NextScheduledUpdated += _onNextScheduledUpdated;
-
-        AddLogEntry("Simulation started.");
 
         if (MinimizeToTray)
         {
@@ -161,11 +153,6 @@ public partial class MainViewModel : ObservableObject
             _orchestrator.ActionExecuted -= _onActionExecuted;
         }
 
-        if (_logHandler is not null)
-        {
-            _orchestrator.ActionExecuted -= _logHandler;
-        }
-
         if (_onIdleTimeUpdated is not null)
         {
             _orchestrator.IdleTimeUpdated -= _onIdleTimeUpdated;
@@ -177,11 +164,8 @@ public partial class MainViewModel : ObservableObject
         }
 
         _onActionExecuted = null;
-        _logHandler = null;
         _onIdleTimeUpdated = null;
         _onNextScheduledUpdated = null;
-
-        AddLogEntry("Simulation stopped.");
     }
 
     private bool CanStop() => IsRunning;
@@ -200,16 +184,6 @@ public partial class MainViewModel : ObservableObject
     {
         UpdateConfigFromProperties();
         await _configRepository.SaveAsync(_config);
-    }
-
-    public void AddLogEntry(string entry)
-    {
-        DispatcherQueue?.TryEnqueue(() =>
-        {
-            LogText = LogText.Length > 10000
-                ? entry + Environment.NewLine
-                : entry + Environment.NewLine + LogText;
-        });
     }
 
     public void UpdateIdleTime(TimeSpan idleTime)

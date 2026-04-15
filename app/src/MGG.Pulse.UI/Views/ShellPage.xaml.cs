@@ -30,6 +30,8 @@ public sealed partial class ShellPage : Page
         {
             "Dashboard" => typeof(DashboardPage),
             "Settings"  => typeof(SettingsPage),
+            "Appearance" => typeof(AppearancePage),
+            "Logs" => typeof(LogsPage),
             "About"     => typeof(AboutPage),
             _           => typeof(DashboardPage)
         };

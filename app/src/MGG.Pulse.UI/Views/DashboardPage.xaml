@@ -116,23 +116,6 @@
                 Padding="24,10"
                 Visibility="{x:Bind ViewModel.IsRunning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-            <Border Style="{StaticResource CardStyle}">
-                <StackPanel Spacing="8">
-                    <TextBlock
-                        Foreground="{StaticResource TextPrimaryBrush}"
-                        FontSize="13"
-                        FontWeight="SemiBold"
-                        Text="Activity Log" />
-                    <ScrollViewer Height="150" VerticalScrollBarVisibility="Auto">
-                        <TextBlock
-                            Foreground="{StaticResource TextSecondaryBrush}"
-                            FontFamily="Consolas"
-                            FontSize="11"
-                            Text="{x:Bind ViewModel.LogText, Mode=OneWay}"
-                            TextWrapping="Wrap" />
-                    </ScrollViewer>
-                </StackPanel>
-            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

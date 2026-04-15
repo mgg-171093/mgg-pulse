@@ -103,6 +103,8 @@ app/src/MGG.Pulse.UI/xaml_err.txt
 app/src/MGG.Pulse.UI/xaml_out.txt
 app/src/MGG.Pulse.UI/build_log.txt
 app/src/MGG.Pulse.UI/logs.json
+err.log
+out.log
 
 # ── Secrets / environment ─────────────────────────────────────
 *.env

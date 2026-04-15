@@ -12,6 +12,8 @@
     <WindowsPackageType>None</WindowsPackageType>
     <EnableMsixTooling>true</EnableMsixTooling>
     <SelfContained>false</SelfContained>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +41,10 @@
     <Content Include="..\..\assets\branding\icon-app.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Assets\icon-app.png</Link>
+    </Content>
+    <Content Include="..\..\assets\branding\icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Assets\icon.ico</Link>
     </Content>
     <Content Include="..\..\assets\branding\banner-readme.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

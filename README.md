@@ -1,6 +1,6 @@
 ![MGG Pulse](app/assets/branding/banner-readme.png)
 
-[![Version](https://img.shields.io/badge/Version-1.1.0-blue?style=flat-square)](./app/build/latest.json)
+[![Version](https://img.shields.io/badge/Version-1.2.0-blue?style=flat-square)](./app/build/latest.json)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![WinUI 3](https://img.shields.io/badge/WinUI_3-Windows_App_SDK_1.5-0078D4?style=flat-square&logo=windows&logoColor=white)](https://learn.microsoft.com/en-us/windows/apps/winui/winui3/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
@@ -56,17 +56,17 @@ graph TB
 
 | Feature | Description |
 |---------|-------------|
-| **Shell Navigation** | WinUI 3 `NavigationView` — Dashboard / Settings / About |
+| **Shell Navigation** | WinUI 3 `NavigationView` — Dashboard / Settings / Appearance / Logs / About |
 | **System Tray** | Runs silently in background; show/hide, start/stop, quit from tray |
-| **Splash Screen** | Branded fade-in with version overlay, 5-second minimum display |
-| **Dark / Light theme** | System / Light / Dark toggle — WinUI 3 native theming |
+| **Splash Screen** | Large logo-first branded launch with 5-second minimum display |
+| **Dark / Light theme** | Dedicated Appearance page with persisted Light / Dark toggle |
 
 ### Settings & Persistence
 
 | Feature | Description |
 |---------|-------------|
 | **Persistent config** | Saves to `%AppData%\MGG\Pulse\config.json` — survives updates |
-| **Real-time logs** | Built-in log viewer in Dashboard with configurable verbosity |
+| **Real-time logs** | Dedicated Logs page with in-session continuity |
 | **Settings page** | All config controls isolated from the Dashboard |
 
 ### Auto-Updater
@@ -95,7 +95,7 @@ graph TB
 
 > **Prerequisites**: .NET 8 Desktop Runtime, Windows App SDK 1.5+ (bundled in installer).
 
-1. Download `MGGPulse-Setup-1.1.0.exe` from [Releases](https://github.com/mgg-171093/mgg-pulse/releases)
+1. Download `MGGPulse-Setup-1.2.0.exe` from [Releases](https://github.com/mgg-171093/mgg-pulse/releases)
 2. Run the installer — **no admin / UAC required** (installs per-user by default)
 3. The app installs to `%LocalAppData%\MGG\Pulse\`
 4. Launch **MGG Pulse** from the Start Menu or Desktop shortcut

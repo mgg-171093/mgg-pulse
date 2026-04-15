@@ -1,3 +1,4 @@
+using MGG.Pulse.Domain.Enums;
 using MGG.Pulse.Domain.Ports;
 using System.Drawing;
 using System.Windows.Forms;
@@ -15,6 +16,12 @@ public class SystemTrayService : ITrayService
     private Action? _onShow;
     private Action? _onStartStop;
     private Action? _onExit;
+    private readonly ILoggerService? _loggerService;
+
+    public SystemTrayService(ILoggerService? loggerService = null)
+    {
+        _loggerService = loggerService;
+    }
 
     public void Initialize(Action onShow, Action onStartStop, Action onExit)
     {
@@ -39,22 +46,23 @@ public class SystemTrayService : ITrayService
         _notifyIcon.Text = "MGG Pulse — Inactive";
         _notifyIcon.Visible = true;
 
-        // Load icon from logo
+        // Load icon from branded .ico with safe fallback
         try
         {
-            var logoPath = Path.Combine(AppContext.BaseDirectory, "Assets", "logo.png");
-            if (File.Exists(logoPath))
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "icon.ico");
+            if (File.Exists(iconPath))
             {
-                using var bitmap = new Bitmap(logoPath);
-                _notifyIcon.Icon = Icon.FromHandle(bitmap.GetHicon());
+                _notifyIcon.Icon = new Icon(iconPath);
             }
             else
             {
+                _loggerService?.Log(LogLevel.Minimal, $"Tray icon not found at '{iconPath}', using SystemIcons.Application fallback.");
                 _notifyIcon.Icon = SystemIcons.Application;
             }
         }
-        catch
+        catch (Exception ex)
         {
+            _loggerService?.Log(LogLevel.Minimal, $"Tray icon load failed: {ex.Message}. Using fallback icon.");
             _notifyIcon.Icon = SystemIcons.Application;
         }
 
