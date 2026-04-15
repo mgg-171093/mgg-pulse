@@ -9,13 +9,24 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased]
 
 ### Added
-- Shell navigation with dedicated Dashboard, Settings, and About surfaces.
-- Auto-update plumbing with `latest.json` checks, background hosted timer, and installer handoff use case.
-- Windows installer pipeline with `build.ps1`, `pulse.iss`, and branding/icon generation tooling.
+- Dedicated Appearance page with persisted Light/Dark theme switching.
+- Dedicated Logs page with in-session continuity for runtime logs.
 
 ### Changed
-- Splash flow and branding assets aligned to the packify release model.
-- Project and app documentation expanded (`README`, `app/README`, `ARCHITECTURE`) for release operations.
+- Larger logo-first splash and refined shell chrome aligned to the Material-inspired visual pass.
+- Shell navigation expanded to Dashboard / Settings / Appearance / Logs / About with status bar and stronger sidebar branding.
+
+---
+
+## [1.2.0] — 2026-04-15
+
+### Added
+- **pulse-material-ui-refinement**: Material-inspired UI refinement with dedicated Appearance and Logs pages, persisted theme preference, sidebar branding, status bar, and consistent icon surfaces.
+
+### Changed
+- Enlarged splash experience to focus on the brand logo and loader.
+- Removed dashboard log transcript in favor of a dedicated Logs surface.
+- Refined dark/light palettes and shell layout for clearer sidebar/body separation.
 
 ---
 
@@ -35,5 +46,6 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.2.0
 [1.0.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.0.0
