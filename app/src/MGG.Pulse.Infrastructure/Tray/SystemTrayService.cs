@@ -33,7 +33,7 @@ public class SystemTrayService : ITrayService
 
     private void RunTrayThread()
     {
-        Application.EnableVisualStyles();
+        System.Windows.Forms.Application.EnableVisualStyles();
 
         _notifyIcon = new NotifyIcon();
         _notifyIcon.Text = "MGG Pulse — Inactive";
@@ -80,7 +80,7 @@ public class SystemTrayService : ITrayService
 
         _notifyIcon.ContextMenuStrip = _menu;
 
-        Application.Run();
+        System.Windows.Forms.Application.Run();
     }
 
     public void SetTooltip(string text)
@@ -116,7 +116,7 @@ public class SystemTrayService : ITrayService
                 _notifyIcon.Visible = false;
                 _notifyIcon.Dispose();
             }
-            Application.ExitThread();
+            System.Windows.Forms.Application.ExitThread();
         });
     }
 
