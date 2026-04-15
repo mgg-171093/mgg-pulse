@@ -36,6 +36,7 @@ bld/
 
 # ── Visual Studio ─────────────────────────────────────────────
 .vs/
+.vscode/
 *.vcxproj.filters
 *.vcxproj.user
 *.VC.db
@@ -94,6 +95,14 @@ $RECYCLE.BIN/
 *.swp
 *~
 .sass-cache/
+app/build_diag.log
+app/build_diag.binlog
+app/build/output/
+app/build/publish/
+app/src/MGG.Pulse.UI/xaml_err.txt
+app/src/MGG.Pulse.UI/xaml_out.txt
+app/src/MGG.Pulse.UI/build_log.txt
+app/src/MGG.Pulse.UI/logs.json
 
 # ── Secrets / environment ─────────────────────────────────────
 *.env
@@ -105,3 +114,7 @@ appsettings.*.local.json
 
 # ── Local app data (NOT committed) ───────────────────────────
 # Config lives at %AppData%\MGG\Pulse\config.json — never in repo
+
+# Keep source folder named Win32 under Infrastructure
+!app/src/MGG.Pulse.Infrastructure/Win32/
+!app/src/MGG.Pulse.Infrastructure/Win32/*.cs

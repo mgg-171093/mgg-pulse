@@ -10,7 +10,11 @@ public class BoolToVisibilityConverter : IValueConverter
     {
         var invert = parameter?.ToString() == "Invert";
         var boolValue = value is bool b && b;
-        if (invert) boolValue = !boolValue;
+        if (invert)
+        {
+            boolValue = !boolValue;
+        }
+
         return boolValue ? Visibility.Visible : Visibility.Collapsed;
     }
 

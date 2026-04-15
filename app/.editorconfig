@@ -32,7 +32,7 @@ dotnet_diagnostic.CS8601.severity = error
 dotnet_diagnostic.CS8602.severity = error
 dotnet_diagnostic.CS8603.severity = error
 dotnet_diagnostic.CS8604.severity = error
-dotnet_diagnostic.CS8618.severity = error
+dotnet_diagnostic.CS8618.severity = warning
 
 # Unused
 dotnet_diagnostic.CS0168.severity = warning

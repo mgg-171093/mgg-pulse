@@ -33,7 +33,7 @@ public class SystemTrayService : ITrayService
 
     private void RunTrayThread()
     {
-        Application.EnableVisualStyles();
+        System.Windows.Forms.Application.EnableVisualStyles();
 
         _notifyIcon = new NotifyIcon();
         _notifyIcon.Text = "MGG Pulse — Inactive";
@@ -80,25 +80,36 @@ public class SystemTrayService : ITrayService
 
         _notifyIcon.ContextMenuStrip = _menu;
 
-        Application.Run();
+        System.Windows.Forms.Application.Run();
     }
 
     public void SetTooltip(string text)
     {
-        if (_notifyIcon is null) return;
+        if (_notifyIcon is null)
+        {
+            return;
+        }
+
         InvokeOnTrayThread(() => _notifyIcon.Text = text[..Math.Min(text.Length, 63)]);
     }
 
     public void ShowNotification(string title, string message)
     {
-        if (_notifyIcon is null) return;
+        if (_notifyIcon is null)
+        {
+            return;
+        }
+
         InvokeOnTrayThread(() => _notifyIcon.ShowBalloonTip(3000, title, message, ToolTipIcon.Info));
     }
 
     public void SetRunningState(bool isRunning)
     {
         _isRunning = isRunning;
-        if (_notifyIcon is null || _startStopItem is null) return;
+        if (_notifyIcon is null || _startStopItem is null)
+        {
+            return;
+        }
 
         InvokeOnTrayThread(() =>
         {
@@ -116,15 +127,19 @@ public class SystemTrayService : ITrayService
                 _notifyIcon.Visible = false;
                 _notifyIcon.Dispose();
             }
-            Application.ExitThread();
+            System.Windows.Forms.Application.ExitThread();
         });
     }
 
     private void InvokeOnTrayThread(Action action)
     {
         if (_menu?.InvokeRequired == true)
+        {
             _menu.Invoke(action);
+        }
         else
+        {
             action();
+        }
     }
 }

@@ -1,21 +1,7 @@
-# MGG Pulse
+# MGG Pulse — App
 
 A configurable, rule-based user activity simulator for Windows.  
 Prevents session timeouts in remote environments (RDP, VDI, Citrix) by simulating minimal, non-intrusive input only when the user is genuinely idle.
-
----
-
-## Features
-
-- **Intelligent Mode** — simulates input only when idle time exceeds threshold
-- **Aggressive Mode** — always simulate, regardless of user activity
-- **Manual Mode** — simulate on fixed intervals
-- **Safe simulation** — mouse moves 1–2px, keyboard uses Shift/Ctrl (non-disruptive)
-- **System Tray** — runs silently in background, accessible from tray icon
-- **Custom Splash Screen** — animated fade-in on startup
-- **Dark/Light theme** — Material Design inspired, WinUI 3 native
-- **Persistent config** — saves to `%AppData%\MGG\Pulse\config.json`
-- **Real-time logs** — built-in log viewer with configurable verbosity
 
 ---
 
@@ -23,13 +9,16 @@ Prevents session timeouts in remote environments (RDP, VDI, Citrix) by simulatin
 
 ```
 MGG.Pulse.Domain          ← Entities, Value Objects, Ports (interfaces). Zero dependencies.
-MGG.Pulse.Application     ← Use Cases, Rule Engine, Cycle Orchestrator
-MGG.Pulse.Infrastructure  ← Win32 adapters, JSON config, file logger, tray service
-MGG.Pulse.UI              ← WinUI 3 views, ViewModels (CommunityToolkit.Mvvm)
-MGG.Pulse.Tests.Unit      ← xUnit + Moq — Domain and Application tests
+MGG.Pulse.Application     ← Use Cases, Rule Engine, CycleOrchestrator, UpdateHostedService
+MGG.Pulse.Infrastructure  ← Win32 adapters, JSON config, file logger, tray service, update service
+MGG.Pulse.UI              ← WinUI 3 shell (ShellPage, Dashboard, Settings, About, Splash)
+                             ViewModels (CommunityToolkit.Mvvm)
+MGG.Pulse.Tests.Unit      ← xUnit + Moq — Domain and Application layer tests
 ```
 
-**Dependency rule**: `UI → Application → Domain`. Infrastructure implements Domain ports. Domain has zero external dependencies.
+**Dependency rule**: `UI → Application → Domain`. Infrastructure implements Domain ports. Domain has **zero** external dependencies.
+
+> Full architecture with diagrams → [`../ARCHITECTURE.md`](../ARCHITECTURE.md)
 
 ---
 
@@ -41,53 +30,92 @@ MGG.Pulse.Tests.Unit      ← xUnit + Moq — Domain and Application tests
 
 ---
 
-## Build
+## Development Quick Start
 
-```bash
-dotnet build MGG.Pulse.sln
+```powershell
+# Restore
+dotnet restore MGG.Pulse.slnx
+
+# Build
+dotnet build MGG.Pulse.slnx
+
+# Run
+dotnet run --project src/MGG.Pulse.UI/MGG.Pulse.UI.csproj
 ```
+
+> Open `MGG.Pulse.slnx` in Visual Studio 2022 or Rider and press **F5** for the full debug experience.
+
+---
 
 ## Run Tests
 
-```bash
+```powershell
+# All unit tests
 dotnet test tests/MGG.Pulse.Tests.Unit
+
+# Verbose output
+dotnet test tests/MGG.Pulse.Tests.Unit --logger "console;verbosity=detailed"
+
+# Filter by class
+dotnet test tests/MGG.Pulse.Tests.Unit --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
 ```
 
 ---
 
-## Logo Replacement
+## Build Installer
 
-The logo is defined in a single location:
+See [`build/build.ps1`](build/build.ps1) for the full pipeline:
 
+```powershell
+# Full build: dotnet publish → icon gen → Inno Setup
+pwsh -File build/build.ps1
+
+# Skip icon generation
+pwsh -File build/build.ps1 -SkipIco
+
+# Override version
+pwsh -File build/build.ps1 -Version 1.2.0
 ```
-assets/branding/logo.png
-```
 
-Replace that file (256×256 PNG recommended) to update the logo in:
-- Splash screen
-- System tray icon
-
-The build pipeline copies it automatically — no other changes needed.
+Output: `build/output/MGGPulse-Setup-{version}.exe`
 
 ---
 
-## Project Structure
+## Features
 
-```
-mgg-pulse/
-├── src/
-│   ├── MGG.Pulse.Domain/
-│   ├── MGG.Pulse.Application/
-│   ├── MGG.Pulse.Infrastructure/
-│   └── MGG.Pulse.UI/
-├── tests/
-│   └── MGG.Pulse.Tests.Unit/
-├── assets/
-│   └── branding/
-│       └── logo.png          ← Replace to update logo everywhere
-├── openspec/                 ← Spec-Driven Development artifacts
-├── .skills/                  ← Project-specific agent skills
-└── AGENTS.md                 ← AI agent instructions
+| Feature | Description |
+|---------|-------------|
+| **Intelligent Mode** | Simulates input only when idle time exceeds threshold |
+| **Aggressive Mode** | Always simulates, regardless of user activity |
+| **Manual Mode** | Fixed-interval simulation |
+| **Safe simulation** | Mouse moves 1–2 px; keyboard uses Shift/Ctrl — non-disruptive |
+| **Shell Navigation** | WinUI 3 `NavigationView` — Dashboard / Settings / About |
+| **System Tray** | Runs silently in background; accessible from tray icon |
+| **Splash Screen** | Branded fade-in with version overlay, 5-second minimum display |
+| **Dark / Light theme** | WinUI 3 native theming |
+| **Persistent config** | Saves to `%AppData%\MGG\Pulse\config.json` — survives updates |
+| **Real-time logs** | Built-in log viewer in Dashboard |
+| **Auto-updater** | Startup check + 4-hour periodic check via `UpdateHostedService` |
+| **Manual update check** | From About page — inline loading state and result |
+
+---
+
+## Branding Assets
+
+All branding lives under `assets/branding/`:
+
+| File | Usage |
+|------|-------|
+| `banner-readme.png` | GitHub README banner |
+| `logo-main.png` | Splash screen and About page |
+| `logo-sidebar.png` | Compact variant for tray/sidebar |
+| `icon-app.png` | Source PNG for icon generation |
+| `icon.ico` | Generated by `tools/gen-icon.ps1` — used in installer and window chrome |
+
+To update the logo: replace `logo-main.png` (and optionally `logo-sidebar.png`), then regenerate `icon.ico`:
+
+```powershell
+pwsh -File tools/gen-icon.ps1
 ```
 
 ---
@@ -98,13 +126,64 @@ mgg-pulse/
 %AppData%\MGG\Pulse\config.json
 ```
 
+Config is **never overwritten on upgrade** — settings survive installs.
+
 ---
 
-## V1 Scope
+## Data Paths
 
-This is a personal-use tool. Out of scope for V1:
+| What | Path |
+|------|------|
+| Config file | `%AppData%\MGG\Pulse\config.json` |
+| Log file | `%LocalAppData%\MGG\Pulse\logs\pulse.log` |
+| App install dir | `%LocalAppData%\MGG\Pulse\` |
 
-- MSIX installer / code signing
-- Auto-update
-- UI automation tests
-- Multi-profile support
+---
+
+## Project Structure
+
+```
+app/
+├── MGG.Pulse.slnx
+├── AGENTS.md                      ← AI agent rules and conventions
+├── CHANGELOG.md
+├── Directory.Build.props
+│
+├── assets/branding/               ← All branding assets
+│   ├── banner-readme.png
+│   ├── logo-main.png
+│   ├── logo-sidebar.png
+│   ├── icon-app.png
+│   └── icon.ico (generated)
+│
+├── build/
+│   ├── build.ps1                  ← Full release pipeline
+│   ├── pulse.iss                  ← Inno Setup installer script
+│   └── latest.json                ← Update manifest (fill before each release)
+│
+├── tools/
+│   └── gen-icon.ps1               ← Generates icon.ico from logo-main.png
+│
+├── src/
+│   ├── MGG.Pulse.Domain/
+│   ├── MGG.Pulse.Application/
+│   ├── MGG.Pulse.Infrastructure/
+│   └── MGG.Pulse.UI/
+│
+├── tests/
+│   └── MGG.Pulse.Tests.Unit/
+│
+└── openspec/                      ← SDD specs, proposals, designs, task lists
+```
+
+---
+
+## SDD Workflow
+
+This project uses **Spec-Driven Development** (openspec mode).
+
+```
+sdd-explore → sdd-propose → sdd-spec → sdd-design → sdd-tasks → sdd-apply → sdd-verify → sdd-archive
+```
+
+All SDD artifacts live in `openspec/`. See [`AGENTS.md`](AGENTS.md) for the full workflow and coding conventions.

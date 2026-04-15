@@ -27,13 +27,17 @@ public class JsonConfigRepository : IConfigRepository
         try
         {
             if (!File.Exists(ConfigPath))
+            {
                 return SimulationConfig.Default;
+            }
 
             var json = await File.ReadAllTextAsync(ConfigPath, cancellationToken);
             var dto = JsonSerializer.Deserialize<ConfigDto>(json, JsonOptions);
 
             if (dto is null)
+            {
                 return SimulationConfig.Default;
+            }
 
             return new SimulationConfig(
                 mode: dto.Mode,

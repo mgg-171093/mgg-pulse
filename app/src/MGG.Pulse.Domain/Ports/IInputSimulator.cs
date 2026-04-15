@@ -4,5 +4,5 @@ namespace MGG.Pulse.Domain.Ports;
 
 public interface IInputSimulator
 {
-    Task ExecuteAsync(InputType inputType, CancellationToken cancellationToken);
+    public Task ExecuteAsync(InputType inputType, CancellationToken cancellationToken);
 }

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MGG.Pulse.Domain\MGG.Pulse.Domain.csproj" />
+    <ProjectReference Include="..\MGG.Pulse.Application\MGG.Pulse.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

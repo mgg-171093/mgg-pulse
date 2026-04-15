@@ -20,7 +20,10 @@ public class SimulationSession
     public void End()
     {
         if (EndedAt.HasValue)
+        {
             throw new InvalidOperationException("Session has already ended.");
+        }
+
         EndedAt = DateTime.UtcNow;
     }
 

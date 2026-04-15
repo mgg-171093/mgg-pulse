@@ -72,32 +72,17 @@ El sistema MUST proporcionar un botón primario para iniciar y detener la simula
 - THEN la simulación se detiene limpiamente
 - AND el botón cambia a "Start"
 
-### Requirement: Mode Selection
-
-El sistema MUST permitir al usuario seleccionar el modo de simulación (Intelligent / Aggressive / Manual) desde la UI.
-
-#### Scenario: Mode change takes effect on next cycle
-
-- GIVEN la simulación está activa en modo `Intelligent`
-- WHEN el usuario selecciona `Aggressive`
-- THEN el cambio se aplica en el próximo ciclo de evaluación
-- AND la config se persiste automáticamente
-
 ### Requirement: Configuration Panel
 
-El sistema MUST permitir configurar el tipo de input (Mouse / Keyboard / Combined) y el intervalo (fijo o rango aleatorio).
+The dashboard MUST remain focused on monitoring and runtime control only. Editable settings SHALL be managed on a dedicated Settings page, and the dashboard MUST NOT embed mode, input type, interval, or startup-option forms.
+(Previously: The dashboard allowed users to edit input type and interval directly in the main UI.)
 
-#### Scenario: Set input type
+#### Scenario: Dashboard excludes settings forms
 
-- GIVEN el usuario selecciona "Keyboard" en el panel de configuración
-- WHEN se confirma
-- THEN la simulación usará solo eventos de teclado
-
-#### Scenario: Set random interval range
-
-- GIVEN el usuario configura min=30s y max=60s
-- WHEN se guarda la config
-- THEN el CycleOrchestrator usará intervalos aleatorios entre 30 y 60 segundos
+- GIVEN the user opens the dashboard
+- WHEN the page renders
+- THEN monitoring data and start or stop controls are visible
+- AND editable mode, input type, interval, and startup-option controls are not shown there
 
 ### Requirement: Real-time Log Viewer
 
@@ -115,16 +100,6 @@ El sistema MUST mostrar un panel de logs en tiempo real con los eventos de simul
 - WHEN se ejecuta una acción simulada de rutina
 - THEN NO se agrega entrada al log viewer
 - AND solo errores o cambios de estado se loguean
-
-### Requirement: Stealth Options
-
-El sistema MUST ofrecer opciones de inicio silencioso: "Start with Windows", "Start minimized", "Minimize to tray".
-
-#### Scenario: Start with Windows persisted
-
-- GIVEN el usuario habilita "Start with Windows"
-- WHEN se guarda la configuración
-- THEN se registra una entrada en el registro de Windows para inicio automático
 
 ---
 

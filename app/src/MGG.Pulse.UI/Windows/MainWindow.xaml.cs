@@ -1,3 +1,5 @@
+using MGG.Pulse.UI.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
@@ -6,9 +8,13 @@ namespace MGG.Pulse.UI.Windows;
 
 public sealed partial class MainWindow : Window
 {
+    public MainViewModel ViewModel { get; private set; }
+
     public MainWindow()
     {
         InitializeComponent();
+        ViewModel = App.Services.GetRequiredService<MainViewModel>();
+        ViewModel.HideWindowRequested += HideToTray;
         ConfigureWindow();
     }
 
@@ -32,5 +38,11 @@ public sealed partial class MainWindow : Window
         var x = (displayArea.WorkArea.Width - 420) / 2;
         var y = (displayArea.WorkArea.Height - 640) / 2;
         AppWindow.Move(new PointInt32(x, y));
+    }
+
+    /// <summary>Hides window to tray without destroying it.</summary>
+    public void HideToTray()
+    {
+        AppWindow.Hide();
     }
 }

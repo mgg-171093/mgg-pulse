@@ -6,6 +6,6 @@
     xmlns:views="using:MGG.Pulse.UI.Views"
     Title="MGG Pulse">
 
-    <views:MainPage/>
+    <views:ShellPage/>
 
 </Window>

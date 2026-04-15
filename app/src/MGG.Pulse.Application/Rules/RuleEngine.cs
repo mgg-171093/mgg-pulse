@@ -17,7 +17,9 @@ public class RuleEngine
         {
             var result = rule.Evaluate(context);
             if (!result.ShouldExecute)
+            {
                 return result; // first block wins
+            }
         }
 
         return RuleResult.Allow("All rules passed");

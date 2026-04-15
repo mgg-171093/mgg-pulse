@@ -24,7 +24,9 @@ public class StartSimulationUseCase
         ArgumentNullException.ThrowIfNull(config);
 
         if (cancellationToken.IsCancellationRequested)
+        {
             return Result<SimulationSession>.Fail("Cancellation requested before start.");
+        }
 
         var session = new SimulationSession();
 

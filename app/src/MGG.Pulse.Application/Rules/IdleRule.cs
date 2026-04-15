@@ -20,11 +20,15 @@ public class IdleRule : IRule
     {
         // Aggressive mode bypasses this rule
         if (context.Mode == SimulationMode.Aggressive)
+        {
             return RuleResult.Allow("Aggressive mode bypasses idle check");
+        }
 
         var idleTime = _idleDetector.GetIdleTime();
         if (idleTime.TotalSeconds >= _thresholdSeconds)
+        {
             return RuleResult.Allow($"Idle threshold exceeded: {idleTime.TotalSeconds:F0}s >= {_thresholdSeconds}s");
+        }
 
         return RuleResult.Block($"User is active: idle time {idleTime.TotalSeconds:F0}s < threshold {_thresholdSeconds}s");
     }

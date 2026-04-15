@@ -14,7 +14,11 @@ public class SimulationConfig
     public bool MinimizeToTray { get; private set; }
     public LogLevel LogLevel { get; private set; }
 
-    private SimulationConfig() { } // for deserializer
+    private SimulationConfig()
+    {
+        // for deserializer
+        Interval = new IntervalRange(30, 60);
+    }
 
     public SimulationConfig(
         SimulationMode mode,
