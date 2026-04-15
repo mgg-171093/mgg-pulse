@@ -6,12 +6,33 @@
     Background="{StaticResource BackgroundBrush}">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
         <NavigationView
+            Grid.Row="0"
             x:Name="NavView"
             AlwaysShowHeader="True"
             IsBackButtonVisible="Collapsed"
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
+
+            <NavigationView.PaneHeader>
+                <Border
+                    Margin="8"
+                    Padding="8"
+                    Background="{StaticResource SurfaceVariantBrush}"
+                    CornerRadius="8">
+                    <Image
+                        Width="170"
+                        Height="52"
+                        HorizontalAlignment="Left"
+                        Source="ms-appx:///Assets/logo-sidebar.png"
+                        Stretch="Uniform" />
+                </Border>
+            </NavigationView.PaneHeader>
 
             <NavigationView.MenuItems>
                 <NavigationViewItem
@@ -23,6 +44,14 @@
                     Icon="Setting"
                     Tag="Settings" />
                 <NavigationViewItem
+                    Content="Appearance"
+                    Icon="Highlight"
+                    Tag="Appearance" />
+                <NavigationViewItem
+                    Content="Logs"
+                    Icon="Document"
+                    Tag="Logs" />
+                <NavigationViewItem
                     Content="About"
                     Icon="Help"
                     Tag="About" />
@@ -30,5 +59,17 @@
 
             <Frame x:Name="ContentFrame" />
         </NavigationView>
+
+        <Border
+            Grid.Row="1"
+            Padding="12,8"
+            Background="{StaticResource SurfaceVariantBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1,1,0,0">
+            <TextBlock
+                Foreground="{StaticResource TextSecondaryBrush}"
+                FontSize="12"
+                Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+        </Border>
     </Grid>
 </Page>
