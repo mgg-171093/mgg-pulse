@@ -85,20 +85,31 @@ public class SystemTrayService : ITrayService
 
     public void SetTooltip(string text)
     {
-        if (_notifyIcon is null) return;
+        if (_notifyIcon is null)
+        {
+            return;
+        }
+
         InvokeOnTrayThread(() => _notifyIcon.Text = text[..Math.Min(text.Length, 63)]);
     }
 
     public void ShowNotification(string title, string message)
     {
-        if (_notifyIcon is null) return;
+        if (_notifyIcon is null)
+        {
+            return;
+        }
+
         InvokeOnTrayThread(() => _notifyIcon.ShowBalloonTip(3000, title, message, ToolTipIcon.Info));
     }
 
     public void SetRunningState(bool isRunning)
     {
         _isRunning = isRunning;
-        if (_notifyIcon is null || _startStopItem is null) return;
+        if (_notifyIcon is null || _startStopItem is null)
+        {
+            return;
+        }
 
         InvokeOnTrayThread(() =>
         {
@@ -123,8 +134,12 @@ public class SystemTrayService : ITrayService
     private void InvokeOnTrayThread(Action action)
     {
         if (_menu?.InvokeRequired == true)
+        {
             _menu.Invoke(action);
+        }
         else
+        {
             action();
+        }
     }
 }

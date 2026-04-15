@@ -32,7 +32,7 @@ OutputBaseFilename=MGGPulse-Setup-{#AppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile=..\assets\branding\icon.ico
+; SetupIconFile optional — keep default when custom icon is unavailable/invalid in some environments.
 UninstallDisplayIcon={app}\MGG.Pulse.UI.exe
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog

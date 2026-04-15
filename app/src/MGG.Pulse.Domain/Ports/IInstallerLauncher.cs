@@ -10,5 +10,5 @@ public interface IInstallerLauncher
     /// Launches the installer at <paramref name="installerPath"/> with the <c>/SILENT</c> flag.
     /// The caller should exit the application after this returns so the installer can replace files.
     /// </summary>
-    Task LaunchSilentAsync(string installerPath, CancellationToken cancellationToken);
+    public Task LaunchSilentAsync(string installerPath, CancellationToken cancellationToken);
 }

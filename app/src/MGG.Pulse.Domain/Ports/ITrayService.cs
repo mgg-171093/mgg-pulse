@@ -2,9 +2,9 @@ namespace MGG.Pulse.Domain.Ports;
 
 public interface ITrayService
 {
-    void Initialize(Action onShow, Action onStartStop, Action onExit);
-    void SetTooltip(string text);
-    void ShowNotification(string title, string message);
-    void SetRunningState(bool isRunning);
-    void Dispose();
+    public void Initialize(Action onShow, Action onStartStop, Action onExit);
+    public void SetTooltip(string text);
+    public void ShowNotification(string title, string message);
+    public void SetRunningState(bool isRunning);
+    public void Dispose();
 }

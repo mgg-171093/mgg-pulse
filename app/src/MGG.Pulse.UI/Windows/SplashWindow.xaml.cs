@@ -51,7 +51,11 @@ public sealed partial class SplashWindow : Window
 
     private async void OnFirstActivated(object sender, WindowActivatedEventArgs args)
     {
-        if (!_firstActivation) return;
+        if (!_firstActivation)
+        {
+            return;
+        }
+
         _firstActivation = false;
         Activated -= OnFirstActivated;
 

@@ -20,7 +20,10 @@ public sealed partial class ShellPage : Page
 
     private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        if (args.SelectedItem is not NavigationViewItem item) return;
+        if (args.SelectedItem is not NavigationViewItem item)
+        {
+            return;
+        }
 
         var tag = item.Tag?.ToString();
         var pageType = tag switch

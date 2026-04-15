@@ -17,7 +17,9 @@ public class IntervalRule : IRule
     {
         var elapsed = (DateTime.UtcNow - _lastExecutionTime).TotalSeconds;
         if (elapsed >= _minIntervalSeconds)
+        {
             return RuleResult.Allow($"Interval elapsed: {elapsed:F0}s >= {_minIntervalSeconds}s");
+        }
 
         return RuleResult.Block($"Interval not elapsed: {elapsed:F0}s < {_minIntervalSeconds}s");
     }

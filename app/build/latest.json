@@ -13,6 +13,6 @@
   ],
   "version": "1.1.0",
   "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.1.0/MGGPulse-Setup-1.1.0.exe",
-  "sha256": "PENDING_SHA256",
+  "sha256": "4ac429b8663355ea5cab306f533dafc16578a53a65823652948e5db0b367e42b",
   "notes": "Shell navigation (Dashboard/Settings/About), branded splash, updater pipeline, and installer distribution flow."
 }

@@ -27,33 +27,74 @@ if (-not (Test-Path $SourcePng)) {
     exit 1
 }
 
-# Detect ImageMagick (magick or convert)
+# Detect ImageMagick (magick only; avoid Windows convert.exe collision)
 $magick = $null
 if (Get-Command 'magick' -ErrorAction SilentlyContinue) {
     $magick = 'magick'
-} elseif (Get-Command 'convert' -ErrorAction SilentlyContinue) {
-    $magick = 'convert'
 }
 
-if (-not $magick) {
-    Write-Warning @"
-ImageMagick not found. icon.ico was NOT generated.
-Install ImageMagick and re-run:  tools\gen-icon.ps1
-Download: https://imagemagick.org/script/download.php
+function New-IcoWithDotNet {
+    param(
+        [Parameter(Mandatory = $true)][string] $PngPath,
+        [Parameter(Mandatory = $true)][string] $IcoPath
+    )
+
+    Add-Type -AssemblyName System.Drawing
+    Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+
+public static class IconNative
+{
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool DestroyIcon(IntPtr hIcon);
+}
 "@
-    exit 0   # non-fatal — build continues without .ico
+
+    $bitmap = New-Object System.Drawing.Bitmap($PngPath)
+    try {
+        $iconHandle = $bitmap.GetHicon()
+        $icon = [System.Drawing.Icon]::FromHandle($iconHandle)
+        try {
+            $fileStream = [System.IO.File]::Open($IcoPath, [System.IO.FileMode]::Create)
+            try {
+                $icon.Save($fileStream)
+            }
+            finally {
+                $fileStream.Dispose()
+            }
+        }
+        finally {
+            $icon.Dispose()
+            [IconNative]::DestroyIcon($iconHandle) | Out-Null
+        }
+    }
+    finally {
+        $bitmap.Dispose()
+    }
 }
 
 Write-Host "Generating icon.ico from $SourcePng ..."
 
-# Resize to standard icon sizes and pack into a single .ico
-& $magick $SourcePng `
-    -define icon:auto-resize=256,48,32,16 `
-    $DestIco
+if ($magick) {
+    # Resize to standard icon sizes and pack into a single .ico
+    & $magick $SourcePng `
+        -define icon:auto-resize=256,48,32,16 `
+        $DestIco
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "ImageMagick exited with code $LASTEXITCODE"
-    exit $LASTEXITCODE
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "ImageMagick failed (exit code $LASTEXITCODE). Falling back to System.Drawing icon generation."
+        New-IcoWithDotNet -PngPath $SourcePng -IcoPath $DestIco
+    }
+}
+else {
+    Write-Warning "ImageMagick not found. Falling back to System.Drawing icon generation."
+    New-IcoWithDotNet -PngPath $SourcePng -IcoPath $DestIco
+}
+
+if (-not (Test-Path $DestIco)) {
+    Write-Error "icon.ico generation failed. Destination file was not created."
+    exit 1
 }
 
 Write-Host "icon.ico written to: $DestIco"

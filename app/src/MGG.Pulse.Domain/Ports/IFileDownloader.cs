@@ -10,10 +10,10 @@ public interface IFileDownloader
     /// Downloads a file from <paramref name="url"/> to the system temp directory.
     /// </summary>
     /// <returns>The full local path of the downloaded file.</returns>
-    Task<string> DownloadToTempAsync(string url, CancellationToken cancellationToken);
+    public Task<string> DownloadToTempAsync(string url, CancellationToken cancellationToken);
 
     /// <summary>
     /// Computes the SHA-256 hex digest of a local file.
     /// </summary>
-    Task<string> ComputeSha256Async(string filePath, CancellationToken cancellationToken);
+    public Task<string> ComputeSha256Async(string filePath, CancellationToken cancellationToken);
 }

@@ -65,7 +65,9 @@ public partial class App : Microsoft.UI.Xaml.Application
             _mainWindow.AppWindow.Closing += OnMainWindowClosing;
 
             if (!config.StartMinimized)
+            {
                 _mainWindow.Activate();
+            }
 
             _splashWindow.Close();  // close after main window is created — no zero-window gap
 
@@ -100,7 +102,10 @@ public partial class App : Microsoft.UI.Xaml.Application
 
     private async Task InitializeServicesWithProgress()
     {
-        if (_splashWindow is null) return;
+        if (_splashWindow is null)
+        {
+            return;
+        }
 
         await _splashWindow.AdvanceProgressAsync(33, "Loading configuration...");
         _ = Services.GetRequiredService<IConfigRepository>();
@@ -119,7 +124,11 @@ public partial class App : Microsoft.UI.Xaml.Application
     {
         _dispatcherQueue?.TryEnqueue(() =>
         {
-            if (_mainWindow is null) return;
+            if (_mainWindow is null)
+            {
+                return;
+            }
+
             _mainWindow.AppWindow.Show();
             _mainWindow.Activate();
         });
@@ -131,7 +140,10 @@ public partial class App : Microsoft.UI.Xaml.Application
         _dispatcherQueue?.TryEnqueue(() =>
         {
             var vm = _mainWindow?.ViewModel;
-            if (vm is null) return;
+            if (vm is null)
+            {
+                return;
+            }
 
             if (vm.IsRunning)
             {

@@ -15,5 +15,5 @@ public interface IUpdateService
     /// <param name="cancellationToken">Propagated cancellation token.</param>
     /// <returns>The parsed <see cref="UpdateManifest"/> if available.</returns>
     /// <exception cref="System.Net.Http.HttpRequestException">Thrown when network fails.</exception>
-    Task<UpdateManifest> FetchManifestAsync(CancellationToken cancellationToken);
+    public Task<UpdateManifest> FetchManifestAsync(CancellationToken cancellationToken);
 }

@@ -157,13 +157,24 @@ public partial class MainViewModel : ObservableObject
         _trayService.SetRunningState(false);
 
         if (_onActionExecuted is not null)
+        {
             _orchestrator.ActionExecuted -= _onActionExecuted;
+        }
+
         if (_logHandler is not null)
+        {
             _orchestrator.ActionExecuted -= _logHandler;
+        }
+
         if (_onIdleTimeUpdated is not null)
+        {
             _orchestrator.IdleTimeUpdated -= _onIdleTimeUpdated;
+        }
+
         if (_onNextScheduledUpdated is not null)
+        {
             _orchestrator.NextScheduledUpdated -= _onNextScheduledUpdated;
+        }
 
         _onActionExecuted = null;
         _logHandler = null;
