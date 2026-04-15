@@ -13,6 +13,6 @@
   ],
   "version": "1.2.0",
   "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.2.0/MGGPulse-Setup-1.2.0.exe",
-  "sha256": "<fill-after-build>",
+  "sha256": "5f20a27bf77bc38080460ca9fb01acfa8da44189f068130c324cbfdd5fe93d0f",
   "notes": "Material UI refinement: larger logo-first splash, dedicated Appearance and Logs pages, refined shell chrome, persisted light/dark theme, and branded icon surfaces."
 }
