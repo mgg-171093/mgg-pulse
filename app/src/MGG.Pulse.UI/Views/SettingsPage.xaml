@@ -3,60 +3,60 @@
     x:Class="MGG.Pulse.UI.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Background="{StaticResource BackgroundBrush}">
+    Background="{ThemeResource BackgroundBrush}">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Padding="24" Spacing="16">
 
             <TextBlock
-                Foreground="{StaticResource TextPrimaryBrush}"
+                Foreground="{ThemeResource TextPrimaryBrush}"
                 FontSize="20"
                 FontWeight="Bold"
-                Text="Settings" />
+                Text="Configuración" />
 
             <Border Style="{StaticResource CardStyle}">
                 <StackPanel Spacing="16">
                     <TextBlock
-                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Foreground="{ThemeResource TextPrimaryBrush}"
                         FontSize="13"
                         FontWeight="SemiBold"
-                        Text="Configuration" />
+                        Text="Comportamiento de simulación" />
 
                     <StackPanel Spacing="6">
                         <TextBlock
-                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Foreground="{ThemeResource TextSecondaryBrush}"
                             FontSize="11"
-                            Text="Mode" />
+                            Text="Modo" />
                         <ComboBox
                             HorizontalAlignment="Stretch"
                             SelectedValue="{x:Bind ViewModel.SelectedMode, Mode=TwoWay}"
-                            SelectedValuePath="Content">
-                            <ComboBoxItem Content="Intelligent" />
-                            <ComboBoxItem Content="Aggressive" />
-                            <ComboBoxItem Content="Manual" />
+                            SelectedValuePath="Tag">
+                            <ComboBoxItem Content="Inteligente" Tag="Intelligent" />
+                            <ComboBoxItem Content="Agresivo" Tag="Aggressive" />
+                            <ComboBoxItem Content="Manual" Tag="Manual" />
                         </ComboBox>
                     </StackPanel>
 
                     <StackPanel Spacing="6">
                         <TextBlock
-                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Foreground="{ThemeResource TextSecondaryBrush}"
                             FontSize="11"
-                            Text="Input Type" />
+                            Text="Tipo de entrada" />
                         <ComboBox
                             HorizontalAlignment="Stretch"
                             SelectedValue="{x:Bind ViewModel.SelectedInputType, Mode=TwoWay}"
-                            SelectedValuePath="Content">
-                            <ComboBoxItem Content="Mouse" />
-                            <ComboBoxItem Content="Keyboard" />
-                            <ComboBoxItem Content="Combined" />
+                            SelectedValuePath="Tag">
+                            <ComboBoxItem Content="Ratón" Tag="Mouse" />
+                            <ComboBoxItem Content="Teclado" Tag="Keyboard" />
+                            <ComboBoxItem Content="Combinado" Tag="Combined" />
                         </ComboBox>
                     </StackPanel>
 
                     <StackPanel Spacing="6">
                         <TextBlock
-                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Foreground="{ThemeResource TextSecondaryBrush}"
                             FontSize="11"
-                            Text="Interval (seconds)" />
+                            Text="Intervalo (segundos)" />
                         <Grid ColumnSpacing="8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -67,19 +67,19 @@
                                 Grid.Column="0"
                                 Maximum="3600"
                                 Minimum="1"
-                                PlaceholderText="Min"
+                                PlaceholderText="Mín"
                                 SpinButtonPlacementMode="Hidden"
                                 Value="{x:Bind ViewModel.IntervalMin, Mode=TwoWay}" />
                             <TextBlock
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Foreground="{StaticResource TextSecondaryBrush}"
+                                Foreground="{ThemeResource TextSecondaryBrush}"
                                 Text="&#x2014;" />
                             <NumberBox
                                 Grid.Column="2"
                                 Maximum="3600"
                                 Minimum="1"
-                                PlaceholderText="Max"
+                                PlaceholderText="Máx"
                                 SpinButtonPlacementMode="Hidden"
                                 Value="{x:Bind ViewModel.IntervalMax, Mode=TwoWay}" />
                         </Grid>
@@ -90,38 +90,38 @@
             <Border Style="{StaticResource CardStyle}">
                 <StackPanel Spacing="12">
                     <TextBlock
-                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Foreground="{ThemeResource TextPrimaryBrush}"
                         FontSize="13"
                         FontWeight="SemiBold"
-                        Text="Stealth Options" />
+                        Text="Opciones de sigilo" />
 
                     <ToggleSwitch
-                        Header="Start with Windows"
+                        Header="Iniciar con Windows"
                         IsOn="{x:Bind ViewModel.StartWithWindows, Mode=TwoWay}"
-                        OffContent="Disabled"
-                        OnContent="Enabled" />
+                        OffContent="Desactivado"
+                        OnContent="Activado" />
                     <ToggleSwitch
-                        Header="Start Minimized"
+                        Header="Iniciar minimizado"
                         IsOn="{x:Bind ViewModel.StartMinimized, Mode=TwoWay}"
-                        OffContent="Disabled"
-                        OnContent="Enabled" />
+                        OffContent="Desactivado"
+                        OnContent="Activado" />
                     <ToggleSwitch
-                        Header="Minimize to Tray"
+                        Header="Minimizar a la bandeja"
                         IsOn="{x:Bind ViewModel.MinimizeToTray, Mode=TwoWay}"
-                        OffContent="Disabled"
-                        OnContent="Enabled" />
+                        OffContent="Desactivado"
+                        OnContent="Activado" />
                 </StackPanel>
             </Border>
 
             <Button
                 HorizontalAlignment="Stretch"
                 Command="{x:Bind ViewModel.SaveCommand, Mode=OneWay}"
-                Content="Save Settings"
+                Content="Guardar configuración"
                 Style="{StaticResource PrimaryButtonStyle}" />
 
             <TextBlock
                 HorizontalAlignment="Center"
-                Foreground="{StaticResource PrimaryBrush}"
+                Foreground="{ThemeResource PrimaryBrush}"
                 FontSize="12"
                 Text="{x:Bind ViewModel.SaveStatusMessage, Mode=OneWay}" />
         </StackPanel>

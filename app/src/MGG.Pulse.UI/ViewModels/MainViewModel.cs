@@ -43,7 +43,7 @@ public partial class MainViewModel : ObservableObject
         new(Color.FromArgb(0xFF, 0x2A, 0x2E, 0x45)); // #2A2E45
 
     [ObservableProperty]
-    private string _statusText = "Inactive";
+    private string _statusText = "Inactivo";
 
     [ObservableProperty]
     private string _lastActionText = "—";
@@ -105,9 +105,9 @@ public partial class MainViewModel : ObservableObject
     {
         _cts = new CancellationTokenSource();
         IsRunning = true;
-        StatusText = "Active";
+        StatusText = "Activo";
         _trayService.SetRunningState(true);
-        _trayService.SetTooltip("MGG Pulse — Active");
+        _trayService.SetTooltip("MGG Pulse — Activo");
 
         _onActionExecuted = UpdateLastAction;
         _onIdleTimeUpdated = UpdateIdleTime;
@@ -128,9 +128,9 @@ public partial class MainViewModel : ObservableObject
                 DispatcherQueue?.TryEnqueue(() =>
                 {
                     IsRunning = false;
-                    StatusText = "Inactive";
+                    StatusText = "Inactivo";
                     _trayService.SetRunningState(false);
-                    _trayService.SetTooltip("MGG Pulse — Inactive");
+                    _trayService.SetTooltip("MGG Pulse — Inactivo");
                 });
             });
 
@@ -145,7 +145,7 @@ public partial class MainViewModel : ObservableObject
         _cts?.Cancel();
         await _stopUseCase.ExecuteAsync();
         IsRunning = false;
-        StatusText = "Inactive";
+        StatusText = "Inactivo";
         _trayService.SetRunningState(false);
 
         if (_onActionExecuted is not null)
@@ -201,7 +201,7 @@ public partial class MainViewModel : ObservableObject
         DispatcherQueue?.TryEnqueue(() =>
         {
             var diff = nextAt - DateTime.UtcNow;
-            NextScheduledText = diff.TotalSeconds > 0 ? $"in {(int)diff.TotalSeconds}s" : "now";
+            NextScheduledText = diff.TotalSeconds > 0 ? $"en {(int)diff.TotalSeconds}s" : "ahora";
         });
     }
 
@@ -209,9 +209,17 @@ public partial class MainViewModel : ObservableObject
     {
         DispatcherQueue?.TryEnqueue(() =>
         {
-            LastActionText = $"{action.InputType} at {action.ExecutedAt:HH:mm:ss}";
+            LastActionText = $"{FormatInputTypeLabel(action.InputType)} a las {action.ExecutedAt:HH:mm:ss}";
         });
     }
+
+    private static string FormatInputTypeLabel(InputType inputType) => inputType switch
+    {
+        InputType.Mouse => "Ratón",
+        InputType.Keyboard => "Teclado",
+        InputType.Combined => "Combinado",
+        _ => inputType.ToString()
+    };
 
     private void LoadConfigToProperties()
     {

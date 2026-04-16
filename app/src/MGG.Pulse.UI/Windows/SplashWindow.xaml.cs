@@ -14,9 +14,13 @@ public sealed partial class SplashWindow : Window
     private readonly DateTimeOffset _shownAt;
     private bool _firstActivation = true;
 
-    public SplashWindow()
+    public SplashWindow(string resolvedTheme)
     {
         InitializeComponent();
+        if (Content is FrameworkElement root)
+        {
+            root.RequestedTheme = ToElementTheme(resolvedTheme);
+        }
         _shownAt = DateTimeOffset.UtcNow;
         ConfigureWindow();
         Activated += OnFirstActivated;
@@ -36,6 +40,13 @@ public sealed partial class SplashWindow : Window
         }
 
         Title = "MGG Pulse";
+
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "icon.ico");
+        if (File.Exists(iconPath))
+        {
+            AppWindow.SetIcon(iconPath);
+        }
+
         CenterOnScreen();
     }
 
@@ -97,6 +108,13 @@ public sealed partial class SplashWindow : Window
         {
             await Task.Delay((int)remaining);
         }
+    }
+
+    private static ElementTheme ToElementTheme(string resolvedTheme)
+    {
+        return string.Equals(resolvedTheme, "Light", StringComparison.OrdinalIgnoreCase)
+            ? ElementTheme.Light
+            : ElementTheme.Dark;
     }
 
 }

@@ -27,7 +27,7 @@ public partial class AboutViewModel : ObservableObject
     private async Task CheckForUpdateAsync()
     {
         IsCheckingForUpdate = true;
-        UpdateStatusMessage = "Checking for updates...";
+        UpdateStatusMessage = "Buscando actualizaciones...";
 
         try
         {
@@ -35,17 +35,17 @@ public partial class AboutViewModel : ObservableObject
 
             if (!result.IsSuccess)
             {
-                UpdateStatusMessage = $"Check failed: {result.Error}";
+                UpdateStatusMessage = $"La verificación falló: {result.Error}";
                 return;
             }
 
             if (result.Value?.UpdateAvailable == true)
             {
-                UpdateStatusMessage = $"Update available: v{result.Value.AvailableVersion}";
+                UpdateStatusMessage = $"Actualización disponible: v{result.Value.AvailableVersion}";
             }
             else
             {
-                UpdateStatusMessage = "You are up to date.";
+                UpdateStatusMessage = "Ya tenés la última versión.";
             }
         }
         finally

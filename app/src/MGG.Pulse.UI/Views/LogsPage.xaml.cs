@@ -1,4 +1,5 @@
 using MGG.Pulse.UI.ViewModels;
+using MGG.Pulse.UI.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 
@@ -12,5 +13,11 @@ public sealed partial class LogsPage : Page
     {
         InitializeComponent();
         ViewModel = App.Services.GetRequiredService<LogsViewModel>();
+        Loaded += LogsPage_Loaded;
+    }
+
+    private void LogsPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        CursorHelper.ApplyHandCursorToInteractiveElements(this);
     }
 }

@@ -1,10 +1,12 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Generates icon.ico (16/32/48/256) from assets/branding/icon-app.png using ImageMagick.
-    Falls back to a no-op with a clear warning when ImageMagick is not installed.
+    Generates icon.ico (16/32/48/256) from assets/branding/icon-app.png.
 
 .DESCRIPTION
+    Primary path uses tools/generate_icon.py (Python + Pillow strict ICO writer).
+    Falls back to ImageMagick, and then to System.Drawing if dependencies are unavailable.
+
     Called by build/build.ps1 during the release pipeline. Also callable standalone:
         pwsh -File tools/gen-icon.ps1
 
@@ -21,13 +23,22 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot  = Resolve-Path "$PSScriptRoot\.."
 $SourcePng = Join-Path $RepoRoot 'assets\branding\icon-app.png'
 $DestIco   = Join-Path $RepoRoot 'assets\branding\icon.ico'
+$PythonGenerator = Join-Path $PSScriptRoot 'generate_icon.py'
 
 if (-not (Test-Path $SourcePng)) {
     Write-Error "Source PNG not found: $SourcePng"
     exit 1
 }
 
-# Detect ImageMagick (magick only; avoid Windows convert.exe collision)
+# Detect Python and ImageMagick (magick only; avoid Windows convert.exe collision)
+$python = $null
+if (Get-Command 'python' -ErrorAction SilentlyContinue) {
+    $python = 'python'
+}
+elseif (Get-Command 'py' -ErrorAction SilentlyContinue) {
+    $python = 'py'
+}
+
 $magick = $null
 if (Get-Command 'magick' -ErrorAction SilentlyContinue) {
     $magick = 'magick'
@@ -76,23 +87,47 @@ public static class IconNative
 
 Write-Host "Generating icon.ico from $SourcePng ..."
 
-if ($magick) {
-    # Resize to standard icon sizes and pack into a single .ico
+$generated = $false
+
+if ($python -and (Test-Path $PythonGenerator)) {
+    Write-Host "Using Python/Pillow strict ICO generator: $PythonGenerator"
+
+    if ($python -eq 'py') {
+        & $python -3 $PythonGenerator
+    }
+    else {
+        & $python $PythonGenerator
+    }
+
+    if ($LASTEXITCODE -eq 0 -and (Test-Path $DestIco)) {
+        $generated = $true
+    }
+    else {
+        Write-Warning "Python generator failed (exit code $LASTEXITCODE). Falling back to ImageMagick/System.Drawing."
+    }
+}
+
+if (-not $generated -and $magick) {
+    Write-Host "Using ImageMagick fallback."
     & $magick $SourcePng `
         -define icon:auto-resize=256,48,32,16 `
         $DestIco
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warning "ImageMagick failed (exit code $LASTEXITCODE). Falling back to System.Drawing icon generation."
-        New-IcoWithDotNet -PngPath $SourcePng -IcoPath $DestIco
+    if ($LASTEXITCODE -eq 0 -and (Test-Path $DestIco)) {
+        $generated = $true
+    }
+    else {
+        Write-Warning "ImageMagick fallback failed (exit code $LASTEXITCODE). Falling back to System.Drawing icon generation."
     }
 }
-else {
-    Write-Warning "ImageMagick not found. Falling back to System.Drawing icon generation."
+
+if (-not $generated) {
+    Write-Warning "Using System.Drawing fallback icon generation."
     New-IcoWithDotNet -PngPath $SourcePng -IcoPath $DestIco
+    $generated = (Test-Path $DestIco)
 }
 
-if (-not (Test-Path $DestIco)) {
+if (-not $generated -or -not (Test-Path $DestIco)) {
     Write-Error "icon.ico generation failed. Destination file was not created."
     exit 1
 }

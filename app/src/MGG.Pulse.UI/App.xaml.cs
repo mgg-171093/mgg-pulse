@@ -47,19 +47,22 @@ public partial class App : Microsoft.UI.Xaml.Application
 
         try
         {
-            _splashWindow = new SplashWindow();
+            var config = await Services.GetRequiredService<IConfigRepository>().LoadAsync();
+            var themeService = Services.GetRequiredService<IThemeService>();
+            themeService.ApplyTheme(config.AppearanceTheme);
+            var resolvedTheme = themeService.ResolveEffectiveTheme(config.AppearanceTheme);
+
+            _splashWindow = new SplashWindow(resolvedTheme);
+            ApplyThemeToRootElements(resolvedTheme);
             _splashWindow.Activate();
 
             await InitializeServicesWithProgress();
-
-            ThemeService.ApplyTheme(ThemeService.GetSavedTheme());
-
-            var config = await Services.GetRequiredService<IConfigRepository>().LoadAsync();
 
             // Always create MainWindow — it keeps the WinUI 3 message loop alive.
             // Only Activate() it if the user didn't choose StartMinimized.
             // Without at least one Window reference, the process exits immediately after Splash closes.
             _mainWindow = new MainWindow();
+            ApplyThemeToRootElements(resolvedTheme);
 
             // Give ViewModel the dispatcher so it can enqueue UI updates
             _mainWindow.ViewModel.DispatcherQueue = _dispatcherQueue;
@@ -91,6 +94,36 @@ public partial class App : Microsoft.UI.Xaml.Application
             CrashLogger.Write(ex);
             Exit();
         }
+    }
+
+    internal static void ApplyThemeToRootElements(string resolvedTheme)
+    {
+        if (Current is App app)
+        {
+            app.ApplyThemeToOpenWindows(resolvedTheme);
+        }
+    }
+
+    private void ApplyThemeToOpenWindows(string resolvedTheme)
+    {
+        var requestedTheme = ToElementTheme(resolvedTheme);
+        ApplyThemeToWindowRoot(_splashWindow, requestedTheme);
+        ApplyThemeToWindowRoot(_mainWindow, requestedTheme);
+    }
+
+    private static void ApplyThemeToWindowRoot(Window? window, ElementTheme requestedTheme)
+    {
+        if (window?.Content is FrameworkElement root)
+        {
+            root.RequestedTheme = requestedTheme;
+        }
+    }
+
+    private static ElementTheme ToElementTheme(string resolvedTheme)
+    {
+        return string.Equals(resolvedTheme, "Light", StringComparison.OrdinalIgnoreCase)
+            ? ElementTheme.Light
+            : ElementTheme.Dark;
     }
 
     private void OnMainWindowClosing(Microsoft.UI.Windowing.AppWindow sender, Microsoft.UI.Windowing.AppWindowClosingEventArgs args)
@@ -219,6 +252,8 @@ public partial class App : Microsoft.UI.Xaml.Application
         services.AddSingleton<IIdleDetector, Win32IdleDetector>();
         services.AddSingleton<IInputSimulator, Win32InputSimulator>();
         services.AddSingleton<IConfigRepository, JsonConfigRepository>();
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<IThemeService>(sp => sp.GetRequiredService<ThemeService>());
         services.AddSingleton<FileLoggerService>();
         services.AddSingleton<ILoggerService>(sp => sp.GetRequiredService<FileLoggerService>());
         services.AddSingleton<ITrayService, SystemTrayService>();

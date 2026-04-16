@@ -1,0 +1,28 @@
+change: 2026-04-16-material-pulse-redesign-plan
+mode: hybrid
+updated_at: 2026-04-16
+phase: apply
+status: archived
+last_apply_batch: twelfth-definitive-icon-fix
+last_apply_focus: strict-python-ico-generation-and-applicationicon-wiring
+artifacts:
+  proposal:
+    - proposal.md
+    - engram:sdd/2026-04-16-material-pulse-redesign-plan/proposal
+  spec:
+    - specs/appearance-theme-switching/spec.md
+    - specs/shell-navigation/spec.md
+    - specs/settings-management/spec.md
+    - specs/shared-interaction-polish/spec.md
+    - specs/splash-screen/spec.md
+    - engram:sdd/2026-04-16-material-pulse-redesign-plan/spec
+  design:
+    - design.md
+    - engram:sdd/2026-04-16-material-pulse-redesign-plan/design
+  tasks:
+    - tasks.md
+    - engram:sdd/2026-04-16-material-pulse-redesign-plan/tasks
+  apply_progress:
+    - apply-progress.md
+    - engram:sdd/2026-04-16-material-pulse-redesign-plan/apply-progress
+next_recommended: sdd-archive
