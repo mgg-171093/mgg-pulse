@@ -5,6 +5,10 @@ namespace MGG.Pulse.Domain.Entities;
 
 public class SimulationConfig
 {
+    private const string DarkAppearanceTheme = "Dark";
+    private const string LightAppearanceTheme = "Light";
+    private const string AutoAppearanceTheme = "Auto";
+
     public SimulationMode Mode { get; private set; }
     public IntervalRange Interval { get; private set; }
     public InputType InputType { get; private set; }
@@ -13,11 +17,13 @@ public class SimulationConfig
     public bool StartMinimized { get; private set; }
     public bool MinimizeToTray { get; private set; }
     public LogLevel LogLevel { get; private set; }
+    public string AppearanceTheme { get; private set; }
 
     private SimulationConfig()
     {
         // for deserializer
         Interval = new IntervalRange(30, 60);
+        AppearanceTheme = DarkAppearanceTheme;
     }
 
     public SimulationConfig(
@@ -28,7 +34,8 @@ public class SimulationConfig
         bool startWithWindows = false,
         bool startMinimized = false,
         bool minimizeToTray = true,
-        LogLevel logLevel = LogLevel.Normal)
+        LogLevel logLevel = LogLevel.Normal,
+        string appearanceTheme = DarkAppearanceTheme)
     {
         Mode = mode;
         Interval = interval ?? throw new ArgumentNullException(nameof(interval));
@@ -40,6 +47,7 @@ public class SimulationConfig
         StartMinimized = startMinimized;
         MinimizeToTray = minimizeToTray;
         LogLevel = logLevel;
+        AppearanceTheme = NormalizeAppearanceTheme(appearanceTheme);
     }
 
     public static SimulationConfig Default => new(
@@ -57,4 +65,17 @@ public class SimulationConfig
         MinimizeToTray = minimizeToTray;
     }
     public void UpdateLogLevel(LogLevel logLevel) => LogLevel = logLevel;
+    public void UpdateAppearanceTheme(string appearanceTheme) => AppearanceTheme = NormalizeAppearanceTheme(appearanceTheme);
+
+    private static string NormalizeAppearanceTheme(string? appearanceTheme)
+    {
+        if (string.Equals(appearanceTheme, AutoAppearanceTheme, StringComparison.OrdinalIgnoreCase))
+        {
+            return AutoAppearanceTheme;
+        }
+
+        return string.Equals(appearanceTheme, LightAppearanceTheme, StringComparison.OrdinalIgnoreCase)
+            ? LightAppearanceTheme
+            : DarkAppearanceTheme;
+    }
 }

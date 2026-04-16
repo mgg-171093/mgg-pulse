@@ -4,21 +4,21 @@
     Release build pipeline for MGG Pulse.
 
 .DESCRIPTION
-    1. Reads Version from MGG.Pulse.UI.csproj (or $Version parameter)
+    1. Reads Version from Directory.Build.props (or $Version parameter)
     2. Runs dotnet publish (win-x64, Release, self-contained)
     3. Calls tools/gen-icon.ps1 to produce icon.ico
     4. Compiles the installer with Inno Setup (iscc)
     5. Outputs MGGPulse-Setup-{version}.exe to build/output/
 
 .PARAMETER Version
-    Override the version number. Defaults to reading <Version> from the .csproj.
+    Override the version number. Defaults to reading <Version> from Directory.Build.props.
 
 .PARAMETER SkipIco
     Skip icon generation (useful when ImageMagick is not installed).
 
 .EXAMPLE
     pwsh -File build/build.ps1
-    pwsh -File build/build.ps1 -Version 1.2.0
+    pwsh -File build/build.ps1 -Version 1.3.0
 #>
 
 [CmdletBinding()]
@@ -32,6 +32,7 @@ $ErrorActionPreference = 'Stop'
 
 $RepoRoot   = Resolve-Path "$PSScriptRoot\.."
 $UIProject  = Join-Path $RepoRoot 'src\MGG.Pulse.UI\MGG.Pulse.UI.csproj'
+$PropsFile  = Join-Path $RepoRoot 'Directory.Build.props'
 $PublishDir = Join-Path $RepoRoot 'build\publish'
 $OutputDir  = Join-Path $RepoRoot 'build\output'
 $IssScript  = Join-Path $RepoRoot 'build\pulse.iss'
@@ -39,11 +40,19 @@ $GenIco     = Join-Path $RepoRoot 'tools\gen-icon.ps1'
 
 # -- Resolve version -------------------------------------------------------
 if (-not $Version) {
-    [xml]$csproj = Get-Content $UIProject
-    $Version = $csproj.Project.PropertyGroup.Version
+    if (Test-Path $PropsFile) {
+        [xml]$props = Get-Content $PropsFile
+        $Version = $props.Project.PropertyGroup.Version
+    }
+
+    if (-not $Version) {
+        [xml]$csproj = Get-Content $UIProject
+        $Version = $csproj.Project.PropertyGroup.Version
+    }
+
     if (-not $Version) {
         $Version = '1.0.0'
-        Write-Warning "<Version> not found in .csproj — defaulting to $Version"
+        Write-Warning "<Version> not found in Directory.Build.props/.csproj — defaulting to $Version"
     }
 }
 

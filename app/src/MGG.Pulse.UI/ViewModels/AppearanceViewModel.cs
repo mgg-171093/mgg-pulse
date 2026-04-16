@@ -1,16 +1,28 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using MGG.Pulse.UI.Services;
+using CommunityToolkit.Mvvm.Input;
+using MGG.Pulse.Domain.Entities;
+using MGG.Pulse.Domain.Ports;
+using Microsoft.Windows.AppLifecycle;
 
 namespace MGG.Pulse.UI.ViewModels;
 
 public partial class AppearanceViewModel : ObservableObject
 {
+    private readonly IConfigRepository _configRepository;
+    private readonly Action _restartAction;
+
     [ObservableProperty]
     private string _selectedTheme;
 
-    public AppearanceViewModel()
+    [ObservableProperty]
+    private bool _showRestartBanner;
+
+    public AppearanceViewModel(IThemeService themeService, IConfigRepository configRepository, Action? restartAction = null)
     {
-        _selectedTheme = ThemeService.GetSavedTheme();
+        _configRepository = configRepository;
+        _restartAction = restartAction ?? (() => AppInstance.Restart(""));
+        _selectedTheme = themeService.CurrentTheme;
+        _showRestartBanner = false;
     }
 
     public bool IsDarkTheme
@@ -20,7 +32,7 @@ public partial class AppearanceViewModel : ObservableObject
         {
             if (value)
             {
-                ChangeTheme("Dark");
+                _ = ApplyThemeSelectionAsync("Dark");
             }
         }
     }
@@ -32,12 +44,24 @@ public partial class AppearanceViewModel : ObservableObject
         {
             if (value)
             {
-                ChangeTheme("Light");
+                _ = ApplyThemeSelectionAsync("Light");
             }
         }
     }
 
-    private void ChangeTheme(string nextTheme)
+    public bool IsAutoTheme
+    {
+        get => string.Equals(SelectedTheme, "Auto", StringComparison.OrdinalIgnoreCase);
+        set
+        {
+            if (value)
+            {
+                _ = ApplyThemeSelectionAsync("Auto");
+            }
+        }
+    }
+
+    public async Task ApplyThemeSelectionAsync(string nextTheme)
     {
         if (string.Equals(SelectedTheme, nextTheme, StringComparison.OrdinalIgnoreCase))
         {
@@ -45,9 +69,32 @@ public partial class AppearanceViewModel : ObservableObject
         }
 
         SelectedTheme = nextTheme;
-        ThemeService.SaveTheme(nextTheme);
-        ThemeService.ApplyTheme(nextTheme);
+
+        var config = await LoadConfigOrDefaultAsync();
+        config.UpdateAppearanceTheme(nextTheme);
+        await _configRepository.SaveAsync(config);
+        ShowRestartBanner = true;
+
         OnPropertyChanged(nameof(IsDarkTheme));
         OnPropertyChanged(nameof(IsLightTheme));
+        OnPropertyChanged(nameof(IsAutoTheme));
+    }
+
+    [RelayCommand]
+    private void Restart()
+    {
+        _restartAction();
+    }
+
+    private async Task<SimulationConfig> LoadConfigOrDefaultAsync()
+    {
+        try
+        {
+            return await _configRepository.LoadAsync();
+        }
+        catch
+        {
+            return SimulationConfig.Default;
+        }
     }
 }

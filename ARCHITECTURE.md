@@ -75,9 +75,11 @@ App.xaml.cs (Composition Root)
     │
     └── 2. MainWindow (root Frame)
             └── Frame navigates to → ShellPage
-                    └── NavigationView with three destinations:
-                            ├── DashboardPage  (simulation controls, logs, status)
-                            ├── SettingsPage   (config: mode, interval, input type, theme)
+                    └── NavigationView with five destinations:
+                            ├── DashboardPage  (simulation controls and runtime status)
+                            ├── SettingsPage   (config: mode, interval, input type)
+                            ├── AppearancePage (theme preference: Dark/Light/Auto + restart flow)
+                            ├── LogsPage       (dedicated in-session log viewer)
                             └── AboutPage      (version, changelog link, manual update check)
 ```
 
@@ -211,8 +213,8 @@ build/build.ps1 (from app/ directory)
 
 ```json
 {
-  "version": "1.2.0",
-  "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.2.0/MGGPulse-Setup-1.2.0.exe",
+  "version": "1.3.0",
+  "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.3.0/MGGPulse-Setup-1.3.0.exe",
   "sha256": "<lowercase hex SHA-256 of the .exe>",
   "notes": "Short release notes shown to the user."
 }

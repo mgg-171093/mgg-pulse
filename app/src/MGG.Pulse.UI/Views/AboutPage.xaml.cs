@@ -1,4 +1,5 @@
 using MGG.Pulse.UI.ViewModels;
+using MGG.Pulse.UI.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 
@@ -12,5 +13,11 @@ public sealed partial class AboutPage : Page
     {
         InitializeComponent();
         ViewModel = App.Services.GetRequiredService<AboutViewModel>();
+        Loaded += AboutPage_Loaded;
+    }
+
+    private void AboutPage_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        CursorHelper.ApplyHandCursorToInteractiveElements(this);
     }
 }

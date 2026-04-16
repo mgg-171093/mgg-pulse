@@ -9,11 +9,8 @@ namespace MGG.Pulse.Infrastructure.Persistence;
 
 public class JsonConfigRepository : IConfigRepository
 {
-    private static readonly string ConfigDirectory =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MGG", "Pulse");
-
-    private static readonly string ConfigPath =
-        Path.Combine(ConfigDirectory, "config.json");
+    private readonly string _configDirectory;
+    private readonly string _configPath;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -22,16 +19,35 @@ public class JsonConfigRepository : IConfigRepository
         Converters = { new JsonStringEnumConverter() }
     };
 
+    public JsonConfigRepository()
+        : this(Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "MGG",
+            "Pulse",
+            "config.json"))
+    {
+    }
+
+    public JsonConfigRepository(string configPath)
+    {
+        _configPath = configPath ?? throw new ArgumentNullException(nameof(configPath));
+
+        var directory = Path.GetDirectoryName(_configPath);
+        _configDirectory = !string.IsNullOrWhiteSpace(directory)
+            ? directory
+            : throw new ArgumentException("Config path must include a directory.", nameof(configPath));
+    }
+
     public async Task<SimulationConfig> LoadAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            if (!File.Exists(ConfigPath))
+            if (!File.Exists(_configPath))
             {
                 return SimulationConfig.Default;
             }
 
-            var json = await File.ReadAllTextAsync(ConfigPath, cancellationToken);
+            var json = await File.ReadAllTextAsync(_configPath, cancellationToken);
             var dto = JsonSerializer.Deserialize<ConfigDto>(json, JsonOptions);
 
             if (dto is null)
@@ -47,7 +63,8 @@ public class JsonConfigRepository : IConfigRepository
                 startWithWindows: dto.StartWithWindows,
                 startMinimized: dto.StartMinimized,
                 minimizeToTray: dto.MinimizeToTray,
-                logLevel: dto.LogLevel);
+                logLevel: dto.LogLevel,
+                appearanceTheme: dto.AppearanceTheme);
         }
         catch
         {
@@ -59,7 +76,7 @@ public class JsonConfigRepository : IConfigRepository
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        Directory.CreateDirectory(ConfigDirectory);
+        Directory.CreateDirectory(_configDirectory);
 
         var dto = new ConfigDto
         {
@@ -71,11 +88,12 @@ public class JsonConfigRepository : IConfigRepository
             StartWithWindows = config.StartWithWindows,
             StartMinimized = config.StartMinimized,
             MinimizeToTray = config.MinimizeToTray,
-            LogLevel = config.LogLevel
+            LogLevel = config.LogLevel,
+            AppearanceTheme = config.AppearanceTheme
         };
 
         var json = JsonSerializer.Serialize(dto, JsonOptions);
-        await File.WriteAllTextAsync(ConfigPath, json, cancellationToken);
+        await File.WriteAllTextAsync(_configPath, json, cancellationToken);
     }
 
     private class ConfigDto
@@ -89,5 +107,6 @@ public class JsonConfigRepository : IConfigRepository
         public bool StartMinimized { get; set; }
         public bool MinimizeToTray { get; set; } = true;
         public LogLevel LogLevel { get; set; } = LogLevel.Normal;
+        public string AppearanceTheme { get; set; } = "Dark";
     }
 }

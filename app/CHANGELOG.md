@@ -8,13 +8,17 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+---
+
+## [1.3.0] — 2026-04-16
+
 ### Added
-- Dedicated Appearance page with persisted Light/Dark theme switching.
-- Dedicated Logs page with in-session continuity for runtime logs.
+- **material-pulse-redesign-plan**: Added Auto appearance mode with save-and-restart UX flow, restart InfoBar action, and shared interaction polish spec coverage.
 
 ### Changed
-- Larger logo-first splash and refined shell chrome aligned to the Material-inspired visual pass.
-- Shell navigation expanded to Dashboard / Settings / Appearance / Logs / About with status bar and stronger sidebar branding.
+- Applied launch-time appearance synchronization so splash and shell render with persisted theme from first frame.
+- Unified branded icon pipeline and runtime wiring across window chrome, taskbar, and tray.
+- Updated shell/navigation and settings surfaces with Spanish labels and removed duplicate Settings entry.
 
 ---
 
@@ -46,6 +50,7 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.0
 [1.2.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.2.0
 [1.0.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.0.0

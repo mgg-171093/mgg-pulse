@@ -14,7 +14,8 @@ namespace MGG.Pulse.UI.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly IConfigRepository _configRepository;
-    private readonly MainViewModel _mainViewModel;
+    private readonly IThemeService _themeService;
+    private readonly MainViewModel? _mainViewModel;
 
     [ObservableProperty] private string _selectedMode = "Intelligent";
     [ObservableProperty] private string _selectedInputType = "Mouse";
@@ -23,19 +24,37 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _startWithWindows;
     [ObservableProperty] private bool _startMinimized;
     [ObservableProperty] private bool _minimizeToTray = true;
+    [ObservableProperty] private string _selectedAppearanceTheme = "Dark";
 
     [ObservableProperty] private string _saveStatusMessage = string.Empty;
 
-    public SettingsViewModel(IConfigRepository configRepository, MainViewModel mainViewModel)
+    public SettingsViewModel(IConfigRepository configRepository, IThemeService themeService, MainViewModel mainViewModel)
     {
         _configRepository = configRepository;
+        _themeService = themeService;
         _mainViewModel = mainViewModel;
+        SelectedAppearanceTheme = _themeService.CurrentTheme;
         SyncFromMainViewModel();
+    }
+
+    // Test/support seam for persisted-theme flow without WinUI MainViewModel instantiation.
+    public SettingsViewModel(IConfigRepository configRepository, IThemeService themeService)
+    {
+        _configRepository = configRepository;
+        _themeService = themeService;
+        _mainViewModel = null;
+        SelectedAppearanceTheme = _themeService.CurrentTheme;
     }
 
     /// <summary>Pull current values from the shared MainViewModel config state.</summary>
     private void SyncFromMainViewModel()
     {
+        if (_mainViewModel is null)
+        {
+            SelectedAppearanceTheme = _themeService.CurrentTheme;
+            return;
+        }
+
         SelectedMode      = _mainViewModel.SelectedMode;
         SelectedInputType = _mainViewModel.SelectedInputType;
         IntervalMin       = _mainViewModel.IntervalMin;
@@ -43,22 +62,34 @@ public partial class SettingsViewModel : ObservableObject
         StartWithWindows  = _mainViewModel.StartWithWindows;
         StartMinimized    = _mainViewModel.StartMinimized;
         MinimizeToTray    = _mainViewModel.MinimizeToTray;
+        SelectedAppearanceTheme = _themeService.CurrentTheme;
     }
 
     [RelayCommand]
     private async Task SaveAsync()
     {
-        // Push values back to MainViewModel so running session picks them up
-        _mainViewModel.SelectedMode      = SelectedMode;
-        _mainViewModel.SelectedInputType = SelectedInputType;
-        _mainViewModel.IntervalMin       = IntervalMin;
-        _mainViewModel.IntervalMax       = IntervalMax;
-        _mainViewModel.StartWithWindows  = StartWithWindows;
-        _mainViewModel.StartMinimized    = StartMinimized;
-        _mainViewModel.MinimizeToTray    = MinimizeToTray;
+        if (_mainViewModel is not null)
+        {
+            // Push values back to MainViewModel so running session picks them up
+            _mainViewModel.SelectedMode      = SelectedMode;
+            _mainViewModel.SelectedInputType = SelectedInputType;
+            _mainViewModel.IntervalMin       = IntervalMin;
+            _mainViewModel.IntervalMax       = IntervalMax;
+            _mainViewModel.StartWithWindows  = StartWithWindows;
+            _mainViewModel.StartMinimized    = StartMinimized;
+            _mainViewModel.MinimizeToTray    = MinimizeToTray;
+        }
 
-        await _mainViewModel.SaveConfigCommand.ExecuteAsync(null);
-        SaveStatusMessage = "Settings saved.";
+        if (_mainViewModel is not null)
+        {
+            await _mainViewModel.SaveConfigCommand.ExecuteAsync(null);
+        }
+
+        var config = await _configRepository.LoadAsync();
+        config.UpdateAppearanceTheme(SelectedAppearanceTheme);
+        await _configRepository.SaveAsync(config);
+
+        SaveStatusMessage = "Configuración guardada.";
 
         // Clear status after a short delay
         await Task.Delay(2000);

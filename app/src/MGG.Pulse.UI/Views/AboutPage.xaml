@@ -3,16 +3,16 @@
     x:Class="MGG.Pulse.UI.Views.AboutPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Background="{StaticResource BackgroundBrush}">
+    Background="{ThemeResource BackgroundBrush}">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Padding="24" Spacing="24" HorizontalAlignment="Center" MaxWidth="480">
 
             <TextBlock
-                Foreground="{StaticResource TextPrimaryBrush}"
+                Foreground="{ThemeResource TextPrimaryBrush}"
                 FontSize="20"
                 FontWeight="Bold"
-                Text="About" />
+                Text="Acerca de MGG Pulse" />
 
             <Border Style="{StaticResource CardStyle}">
                 <StackPanel HorizontalAlignment="Center" Spacing="16">
@@ -24,26 +24,26 @@
 
                     <StackPanel HorizontalAlignment="Center" Spacing="4">
                         <TextBlock
-                            Foreground="{StaticResource TextPrimaryBrush}"
+                            Foreground="{ThemeResource TextPrimaryBrush}"
                             FontSize="22"
                             FontWeight="Bold"
                             HorizontalAlignment="Center"
                             Text="MGG Pulse" />
                         <TextBlock
-                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Foreground="{ThemeResource TextSecondaryBrush}"
                             FontSize="13"
                             HorizontalAlignment="Center"
-                            Text="Activity Simulator" />
+                            Text="Simulador de actividad" />
                     </StackPanel>
 
                     <StackPanel HorizontalAlignment="Center" Spacing="4">
                         <TextBlock
-                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Foreground="{ThemeResource TextSecondaryBrush}"
                             FontSize="11"
                             HorizontalAlignment="Center"
-                            Text="Installed Version" />
+                            Text="Versión instalada" />
                         <TextBlock
-                            Foreground="{StaticResource PrimaryBrush}"
+                            Foreground="{ThemeResource PrimaryBrush}"
                             FontSize="15"
                             FontWeight="SemiBold"
                             HorizontalAlignment="Center"
@@ -55,20 +55,20 @@
             <Border Style="{StaticResource CardStyle}">
                 <StackPanel Spacing="12">
                     <TextBlock
-                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Foreground="{ThemeResource TextPrimaryBrush}"
                         FontSize="13"
                         FontWeight="SemiBold"
-                        Text="Updates" />
+                        Text="Actualizaciones" />
 
                     <Button
                         HorizontalAlignment="Stretch"
                         Command="{x:Bind ViewModel.CheckForUpdateCommand, Mode=OneWay}"
-                        Content="Check for Updates"
-                        Style="{StaticResource PrimaryButtonStyle}" />
+                        Content="Buscar actualizaciones"
+                        Style="{StaticResource SecondaryButtonStyle}" />
 
                     <TextBlock
                         HorizontalAlignment="Center"
-                        Foreground="{StaticResource TextSecondaryBrush}"
+                        Foreground="{ThemeResource TextSecondaryBrush}"
                         FontSize="12"
                         Text="{x:Bind ViewModel.UpdateStatusMessage, Mode=OneWay}"
                         TextWrapping="Wrap" />
@@ -78,11 +78,11 @@
             <StackPanel HorizontalAlignment="Center" Spacing="4">
                 <HyperlinkButton
                     HorizontalAlignment="Center"
-                    Content="View Changelog &amp; Releases"
+                    Content="Ver cambios y lanzamientos"
                     FontSize="12"
                     NavigateUri="https://github.com/mgg-dev/mgg-pulse/releases" />
                 <TextBlock
-                    Foreground="{StaticResource TextDisabledBrush}"
+                    Foreground="{ThemeResource TextDisabledBrush}"
                     FontSize="11"
                     HorizontalAlignment="Center"
                     Text="&#xA9; 2024 MGG &#xB7; MIT License" />

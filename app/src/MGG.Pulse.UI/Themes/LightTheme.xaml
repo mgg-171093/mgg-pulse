@@ -5,7 +5,9 @@
 
     <Color x:Key="BackgroundColor">#F3F5F8</Color>
     <Color x:Key="SurfaceColor">#F9FAFC</Color>
+    <Color x:Key="SurfaceRaisedColor">#FFFFFF</Color>
     <Color x:Key="SurfaceVariantColor">#EDEFF5</Color>
+    <Color x:Key="SurfaceAccentColor">#E8F5E9</Color>
     <Color x:Key="BorderColor">#D0D4E0</Color>
 
     <Color x:Key="TextPrimaryColor">#1A1A1A</Color>
@@ -15,10 +17,19 @@
     <Color x:Key="PrimaryColor">#4CAF50</Color>
     <Color x:Key="PrimaryHoverColor">#66BB6A</Color>
     <Color x:Key="PrimaryActiveColor">#388E3C</Color>
+    <Color x:Key="PrimaryContainerColor">#C8E6C9</Color>
+    <Color x:Key="PrimarySubtleColor">#E8F5E9</Color>
+
+    <Color x:Key="FocusRingColor">#2E7D32</Color>
+    <Color x:Key="SidebarSurfaceColor">#EEF2F7</Color>
+    <Color x:Key="SidebarHoverColor">#E3E9F2</Color>
+    <Color x:Key="SidebarSelectedColor">#D7E6D8</Color>
 
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}"/>
     <SolidColorBrush x:Key="SurfaceVariantBrush" Color="{StaticResource SurfaceVariantColor}"/>
+    <SolidColorBrush x:Key="SurfaceAccentBrush" Color="{StaticResource SurfaceAccentColor}"/>
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
@@ -26,25 +37,13 @@
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="PrimaryHoverBrush" Color="{StaticResource PrimaryHoverColor}"/>
     <SolidColorBrush x:Key="PrimaryActiveBrush" Color="{StaticResource PrimaryActiveColor}"/>
+    <SolidColorBrush x:Key="PrimaryContainerBrush" Color="{StaticResource PrimaryContainerColor}"/>
+    <SolidColorBrush x:Key="PrimarySubtleBrush" Color="{StaticResource PrimarySubtleColor}"/>
+    <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource FocusRingColor}"/>
+    <SolidColorBrush x:Key="SidebarSurfaceBrush" Color="{StaticResource SidebarSurfaceColor}"/>
+    <SolidColorBrush x:Key="SidebarHoverBrush" Color="{StaticResource SidebarHoverColor}"/>
+    <SolidColorBrush x:Key="SidebarSelectedBrush" Color="{StaticResource SidebarSelectedColor}"/>
 
     <CornerRadius x:Key="CardCornerRadius">8</CornerRadius>
-
-    <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}"/>
-        <Setter Property="Padding" Value="24,10"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-
-    <Style x:Key="CardStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
-        <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}"/>
-        <Setter Property="Padding" Value="16"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-    </Style>
 
 </ResourceDictionary>

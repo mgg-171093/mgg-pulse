@@ -74,7 +74,7 @@ pwsh -File build/build.ps1
 pwsh -File build/build.ps1 -SkipIco
 
 # Override version
-pwsh -File build/build.ps1 -Version 1.2.0
+pwsh -File build/build.ps1 -Version 1.3.0
 ```
 
 Output: `build/output/MGGPulse-Setup-{version}.exe`
@@ -89,12 +89,12 @@ Output: `build/output/MGGPulse-Setup-{version}.exe`
 | **Aggressive Mode** | Always simulates, regardless of user activity |
 | **Manual Mode** | Fixed-interval simulation |
 | **Safe simulation** | Mouse moves 1–2 px; keyboard uses Shift/Ctrl — non-disruptive |
-| **Shell Navigation** | WinUI 3 `NavigationView` — Dashboard / Settings / About |
+| **Shell Navigation** | WinUI 3 `NavigationView` — Panel de Control / Configuración / Apariencia / Registros / Acerca de |
 | **System Tray** | Runs silently in background; accessible from tray icon |
 | **Splash Screen** | Branded fade-in with version overlay, 5-second minimum display |
-| **Dark / Light theme** | WinUI 3 native theming |
+| **Dark / Light / Auto theme** | Dedicated Appearance page with persisted save-and-restart flow |
 | **Persistent config** | Saves to `%AppData%\MGG\Pulse\config.json` — survives updates |
-| **Real-time logs** | Built-in log viewer in Dashboard |
+| **Real-time logs** | Dedicated Logs page with in-session continuity |
 | **Auto-updater** | Startup check + 4-hour periodic check via `UpdateHostedService` |
 | **Manual update check** | From About page — inline loading state and result |
 
