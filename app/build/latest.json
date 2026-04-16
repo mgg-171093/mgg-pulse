@@ -1,6 +1,6 @@
 {
   "_comment": [
-    "This file is served from GitHub Releases as 'latest.json'.",
+    "This file is committed on main and served from the repo raw URL as 'latest.json'.",
     "The auto-updater in MGG Pulse fetches it at startup and every 4 hours.",
     "",
     "REQUIRED fields:",
