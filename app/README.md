@@ -74,7 +74,7 @@ pwsh -File build/build.ps1
 pwsh -File build/build.ps1 -SkipIco
 
 # Override version
-pwsh -File build/build.ps1 -Version 1.3.0
+pwsh -File build/build.ps1 -Version 1.3.1
 ```
 
 Output: `build/output/MGGPulse-Setup-{version}.exe`

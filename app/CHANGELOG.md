@@ -10,6 +10,13 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+## [1.3.1] — 2026-04-16
+
+### Fixed
+- Corrected updater manifest resolution to the raw `main` branch `latest.json` model, improving reliability of update checks against release metadata.
+
+---
+
 ## [1.3.0] — 2026-04-16
 
 ### Added
@@ -50,7 +57,8 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.1
 [1.3.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.0
 [1.2.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.2.0
 [1.0.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.0.0

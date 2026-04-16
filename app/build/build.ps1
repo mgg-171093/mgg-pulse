@@ -18,7 +18,7 @@
 
 .EXAMPLE
     pwsh -File build/build.ps1
-    pwsh -File build/build.ps1 -Version 1.3.0
+    pwsh -File build/build.ps1 -Version 1.3.1
 #>
 
 [CmdletBinding()]
