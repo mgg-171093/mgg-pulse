@@ -70,6 +70,13 @@
                     Tag="About" />
             </NavigationView.MenuItems>
 
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem
+                    Content="Salir"
+                    Icon="Leave"
+                    Tag="Exit" />
+            </NavigationView.FooterMenuItems>
+
             <Frame x:Name="ContentFrame" />
         </NavigationView>
 

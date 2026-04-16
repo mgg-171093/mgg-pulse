@@ -1,32 +1,12 @@
-# System Tray Specification
+# Delta for System Tray
 
-## Purpose
-
-Define el comportamiento del ícono en la bandeja del sistema que permite operar la app desde background.
-
-## Requirements
-
-### Requirement: Tray Icon Always Visible When Running
-
-El sistema MUST mostrar un ícono en la bandeja del sistema mientras la aplicación esté en ejecución, independientemente del estado de la ventana principal.
-
-#### Scenario: App minimized to tray
-
-- GIVEN la opción "Minimize to tray" está habilitada
-- WHEN el usuario minimiza la ventana principal
-- THEN la ventana desaparece de la taskbar
-- AND el ícono permanece visible en la bandeja del sistema
-
-#### Scenario: App started minimized
-
-- GIVEN la opción "Start minimized" está habilitada
-- WHEN la aplicación inicia
-- THEN la ventana principal NO se muestra
-- AND el ícono del tray está visible inmediatamente
+## MODIFIED Requirements
 
 ### Requirement: Tray Context Menu
 
 El sistema MUST mostrar un menú contextual al hacer click derecho sobre el ícono del tray con las opciones: Show/Hide, Start/Stop Simulation, y Exit. El comando Exit MUST ejecutar el cierre completo de la aplicación: detener la simulación, remover el ícono del tray y finalizar el proceso. La acción **Salir** del sidebar MUST invocar ese mismo cierre completo y MUST NOT ocultar ni minimizar la app al tray.
+
+(Previously: Exit solo estaba definido para el menú contextual del tray y no exigía compartir la misma semántica de cierre con una acción del sidebar.)
 
 #### Scenario: Show window from tray
 
@@ -53,19 +33,3 @@ El sistema MUST mostrar un menú contextual al hacer click derecho sobre el íco
 - WHEN el usuario activa "Salir" desde el sidebar
 - THEN ocurre el mismo cierre completo que con "Exit" del tray
 - AND la aplicación no navega a una nueva página antes de finalizar
-
-### Requirement: Tray Tooltip Reflects State
-
-El sistema MUST actualizar el tooltip del ícono del tray para reflejar el estado actual (Active / Inactive).
-
-#### Scenario: Tooltip when active
-
-- GIVEN la simulación está corriendo
-- WHEN el usuario pasa el mouse sobre el ícono del tray
-- THEN el tooltip muestra "MGG Pulse — Active"
-
-#### Scenario: Tooltip when inactive
-
-- GIVEN la simulación está detenida
-- WHEN el usuario pasa el mouse sobre el ícono del tray
-- THEN el tooltip muestra "MGG Pulse — Inactive"

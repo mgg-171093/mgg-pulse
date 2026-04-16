@@ -16,6 +16,9 @@ public sealed partial class ShellPage : Page
 
     public ShellViewModel ViewModel { get; }
 
+    private object? _lastNavigableSelection;
+    private bool _isRestoringSelection;
+
     public ShellPage()
     {
         InitializeComponent();
@@ -32,15 +35,30 @@ public sealed partial class ShellPage : Page
             settingsItem.PointerExited += NavItem_PointerExited;
         }
 
+        if (NavView.FooterMenuItems.FirstOrDefault() is NavigationViewItem exitItem)
+        {
+            exitItem.GotFocus += NavItem_GotFocus;
+            exitItem.LostFocus += NavItem_LostFocus;
+            exitItem.PointerEntered += NavItem_PointerEntered;
+            exitItem.PointerExited += NavItem_PointerExited;
+        }
+
         // Navigate to Dashboard by default
         NavView.SelectedItem = NavView.MenuItems[0];
+        _lastNavigableSelection = NavView.SelectedItem;
         ContentFrame.Navigate(typeof(DashboardPage));
     }
 
     private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
+        if (_isRestoringSelection)
+        {
+            return;
+        }
+
         if (args.IsSettingsSelected)
         {
+            _lastNavigableSelection = sender.SettingsItem;
             ContentFrame.Navigate(typeof(SettingsPage));
             return;
         }
@@ -51,6 +69,13 @@ public sealed partial class ShellPage : Page
         }
 
         var tag = item.Tag?.ToString();
+        if (string.Equals(tag, "Exit", StringComparison.Ordinal))
+        {
+            RestorePreviousSelection(sender);
+            App.RequestExit();
+            return;
+        }
+
         var pageType = tag switch
         {
             "Dashboard" => typeof(DashboardPage),
@@ -61,6 +86,7 @@ public sealed partial class ShellPage : Page
             _           => typeof(DashboardPage)
         };
 
+        _lastNavigableSelection = item;
         ContentFrame.Navigate(pageType);
 
         foreach (var menuItem in NavView.MenuItems.OfType<NavigationViewItem>())
@@ -70,6 +96,24 @@ public sealed partial class ShellPage : Page
                 : new SolidColorBrush(global::Microsoft.UI.Colors.Transparent);
             menuItem.BorderBrush = new SolidColorBrush(global::Microsoft.UI.Colors.Transparent);
             menuItem.BorderThickness = new Thickness(0);
+        }
+    }
+
+    private void RestorePreviousSelection(NavigationView sender)
+    {
+        if (_lastNavigableSelection is null)
+        {
+            _lastNavigableSelection = sender.MenuItems.FirstOrDefault();
+        }
+
+        _isRestoringSelection = true;
+        try
+        {
+            sender.SelectedItem = _lastNavigableSelection;
+        }
+        finally
+        {
+            _isRestoringSelection = false;
         }
     }
 
