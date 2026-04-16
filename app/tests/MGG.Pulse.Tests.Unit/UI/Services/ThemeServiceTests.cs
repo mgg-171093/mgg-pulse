@@ -239,6 +239,66 @@ public class ThemeServiceTests
     }
 
     [Fact]
+    public void ShellNavigation_DefinesSidebarFooterExitActionInSpanish()
+    {
+        var shell = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml"));
+
+        Assert.Contains("<NavigationView.FooterMenuItems>", shell, StringComparison.Ordinal);
+        Assert.Contains("Content=\"Salir\"", shell, StringComparison.Ordinal);
+        Assert.Contains("Tag=\"Exit\"", shell, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShellSelectionChanged_InterceptsExitTagAndRequestsAppShutdown()
+    {
+        var shellCodeBehind = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml.cs"));
+
+        Assert.Contains("if (string.Equals(tag, \"Exit\", StringComparison.Ordinal))", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("RestorePreviousSelection(sender);", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("App.RequestExit();", shellCodeBehind, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShellSelectionChanged_RestoresPreviousSelectionWhenExitIsActivated()
+    {
+        var shellCodeBehind = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml.cs"));
+
+        Assert.Contains("private object? _lastNavigableSelection;", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("private void RestorePreviousSelection(NavigationView sender)", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("sender.SelectedItem = _lastNavigableSelection;", shellCodeBehind, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShellSelectionChanged_SuppressesNavigationDuringExitSelectionRestore()
+    {
+        var shellCodeBehind = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml.cs"));
+
+        Assert.Contains("private bool _isRestoringSelection;", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("if (_isRestoringSelection)", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("_isRestoringSelection = true;", shellCodeBehind, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShellFooterExitItem_UsesSameHoverFocusPointerHandlersAsNavigationItems()
+    {
+        var shellCodeBehind = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml.cs"));
+
+        Assert.Contains("if (NavView.FooterMenuItems.FirstOrDefault() is NavigationViewItem exitItem)", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("exitItem.GotFocus += NavItem_GotFocus;", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("exitItem.PointerEntered += NavItem_PointerEntered;", shellCodeBehind, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void App_ExposesRequestExitStaticAccessorThatReusesExitApp()
+    {
+        var appCode = File.ReadAllText(ResolveUiFilePath("App.xaml.cs"));
+
+        Assert.Contains("internal static void RequestExit()", appCode, StringComparison.Ordinal);
+        Assert.Contains("if (Current is App app)", appCode, StringComparison.Ordinal);
+        Assert.Contains("app.ExitApp();", appCode, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Pages_UseThemeResourceForThemeSensitiveBrushes()
     {
         var shell = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml"));

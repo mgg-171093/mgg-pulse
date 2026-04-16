@@ -104,6 +104,14 @@ public partial class App : Microsoft.UI.Xaml.Application
         }
     }
 
+    internal static void RequestExit()
+    {
+        if (Current is App app)
+        {
+            app.ExitApp();
+        }
+    }
+
     private void ApplyThemeToOpenWindows(string resolvedTheme)
     {
         var requestedTheme = ToElementTheme(resolvedTheme);
