@@ -77,7 +77,7 @@ graph TB
 | **Periodic check** | Every 4 hours via `UpdateHostedService` background timer |
 | **Manual check** | Trigger from About page; shows loading state and explicit result |
 | **Silent install** | Downloads installer to `%TEMP%`, runs `/SILENT`, exits cleanly |
-| **`latest.json`** | Hosted at GitHub Releases; schema: `version`, `url`, `sha256`, `notes` |
+| **`latest.json`** | Committed on `main` (`app/build/latest.json`); schema: `version`, `url`, `sha256`, `notes` |
 
 ### About Screen
 
@@ -241,7 +241,7 @@ Tests cover Domain and Application layers using **xUnit + Moq**. Infrastructure 
 | Config file | `%AppData%\MGG\Pulse\config.json` |
 | Log file | `%LocalAppData%\MGG\Pulse\logs\pulse.log` |
 | App install dir | `%LocalAppData%\MGG\Pulse\` (installer default) |
-| Update manifest | `https://github.com/mgg-171093/mgg-pulse/releases/latest/download/latest.json` |
+| Update manifest | `https://raw.githubusercontent.com/mgg-171093/mgg-pulse/main/app/build/latest.json` |
 | Downloaded installer | `%TEMP%\MGGPulse-Setup-{version}.exe` (auto-deleted after install) |
 
 Config in `%AppData%` is **never overwritten on upgrade** — your settings survive updates.

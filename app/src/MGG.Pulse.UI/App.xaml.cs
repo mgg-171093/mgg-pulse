@@ -271,7 +271,7 @@ public partial class App : Microsoft.UI.Xaml.Application
 
         // Auto-updater
         var installedVersion = GetInstalledVersion();
-        const string manifestUrl = "https://github.com/mgg-171093/mgg-pulse/releases/latest/download/latest.json";
+        const string manifestUrl = "https://raw.githubusercontent.com/mgg-171093/mgg-pulse/main/app/build/latest.json";
 
         services.AddSingleton<HttpClient>();
         services.AddSingleton<IUpdateService>(sp =>

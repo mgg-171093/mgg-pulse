@@ -113,7 +113,7 @@ Application:      CheckForUpdateUseCase ──► Result<UpdateCheckResult>
 Infrastructure:   GithubReleaseUpdateService
                        │  HttpClient GET
                        ▼
-GitHub Releases:  latest.json
+GitHub raw (main): latest.json
                   { "version", "url", "sha256", "notes" }
 ```
 
@@ -209,7 +209,7 @@ build/build.ps1 (from app/ directory)
     └── [4/4] Done → build/output/MGGPulse-Setup-{version}.exe
 ```
 
-### `latest.json` Schema (GitHub Releases asset)
+### `latest.json` Schema (`main` branch manifest)
 
 ```json
 {
@@ -220,7 +220,7 @@ build/build.ps1 (from app/ directory)
 }
 ```
 
-Upload `latest.json` to every GitHub Release. The auto-updater fetches it from the **latest** release URL.
+Commit `app/build/latest.json` on `main` for every release update. The auto-updater fetches it from the raw `main` branch URL. The installer `.exe` referenced by `url` remains hosted in GitHub Releases.
 
 ---
 
@@ -373,4 +373,4 @@ mgg-pulse/
 | DI container | `Microsoft.Extensions.DependencyInjection` | Standard .NET — no extra dependency, familiar to all .NET devs |
 | State management | CommunityToolkit.Mvvm source generators | Less boilerplate, same MVVM patterns, WinUI 3 compatible |
 | Config format | JSON (`System.Text.Json`) | Human-editable, no migration tooling needed, survives upgrades |
-| Update manifest | `latest.json` on GitHub Releases | Zero infrastructure — static file, no server, same as mgg-packify |
+| Update manifest | `latest.json` committed on `main` (raw URL) | Zero infrastructure — static file in repo, installer binary in GitHub Releases, same as mgg-packify |
