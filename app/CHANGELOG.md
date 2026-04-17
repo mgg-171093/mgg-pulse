@@ -10,6 +10,15 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+## [1.3.4] — 2026-04-17
+
+### Fixed
+- Hid the sidebar toggle when shell is pinned in fixed-open mode to remove redundant navigation affordances.
+- Corrected footer action ordering to show **Configuración** before **Salir** for consistent shell UX flow.
+- Preserved custom sidebar branding layout while applying the final navigation polish adjustments.
+
+---
+
 ## [1.3.3] — 2026-04-16
 
 ### Fixed
@@ -73,7 +82,8 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.3...HEAD
+[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.4...HEAD
+[1.3.4]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.4
 [1.3.3]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.3
 [1.3.2]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.2
 [1.3.1]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.1

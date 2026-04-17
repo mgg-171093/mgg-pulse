@@ -22,7 +22,7 @@
                     Foreground="{ThemeResource TextPrimaryBrush}"
                     FontSize="20"
                     FontWeight="Bold"
-                    Text="Panel" />
+                    Text="Dashboard" />
             </StackPanel>
 
             <Border Style="{StaticResource CardStyle}">
