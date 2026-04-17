@@ -79,6 +79,24 @@ public class ThemeServiceTests
     }
 
     [Fact]
+    public void OnLaunched_WhenStartMinimized_ActivatesThenHidesMainWindow()
+    {
+        var appCode = File.ReadAllText(ResolveUiFilePath("App.xaml.cs"));
+
+        Assert.Contains("if (config.StartMinimized)", appCode, StringComparison.Ordinal);
+        Assert.Contains("_mainWindow.Activate();", appCode, StringComparison.Ordinal);
+        Assert.Contains("_mainWindow.AppWindow.Hide();", appCode, StringComparison.Ordinal);
+
+        var minimizedIf = appCode.IndexOf("if (config.StartMinimized)", StringComparison.Ordinal);
+        var activateCall = appCode.IndexOf("_mainWindow.Activate();", minimizedIf, StringComparison.Ordinal);
+        var hideCall = appCode.IndexOf("_mainWindow.AppWindow.Hide();", minimizedIf, StringComparison.Ordinal);
+
+        Assert.True(minimizedIf >= 0, "Expected minimized startup branch in OnLaunched.");
+        Assert.True(activateCall > minimizedIf, "MainWindow must activate inside minimized startup branch.");
+        Assert.True(hideCall > activateCall, "MainWindow must hide immediately after activation in minimized startup branch.");
+    }
+
+    [Fact]
     public void OnLaunched_LoadsConfigAsynchronouslyWithoutBlockingGetResult()
     {
         var appCode = File.ReadAllText(ResolveUiFilePath("App.xaml.cs"));

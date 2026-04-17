@@ -1,10 +1,12 @@
-# Installer Distribution Specification
+# Delta for Installer Distribution
 
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Silent LocalAppData Installer Flow
 
 The distribution pipeline MUST produce a setup executable that installs to `%LocalAppData%\MGG Pulse` by default and MUST support silent execution for updater-driven installs. A successful updater-driven silent install MUST relaunch `MGG Pulse` automatically after the upgrade completes.
+
+(Previously: The distribution pipeline required silent execution for updater-driven installs, but did not require automatic relaunch after success.)
 
 #### Scenario: Interactive install uses LocalAppData target
 

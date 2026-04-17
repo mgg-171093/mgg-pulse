@@ -58,7 +58,7 @@ Name: "{commondesktop}\MGG Pulse";   Filename: "{app}\MGG.Pulse.UI.exe"; Tasks: 
 Root: HKCU; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "MGGPulse"; ValueData: """{app}\MGG.Pulse.UI.exe"""; Tasks: startupentry; Flags: uninsdeletevalue
 
 [Run]
-Filename: "{app}\MGG.Pulse.UI.exe"; Description: "{cm:LaunchProgram,MGG Pulse}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\MGG.Pulse.UI.exe"; Description: "{cm:LaunchProgram,MGG Pulse}"; Flags: nowait postinstall
 
 [Code]
 // Silent installer support — used by the auto-updater (/SILENT flag).

@@ -10,6 +10,15 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
+## [1.3.3] — 2026-04-16
+
+### Fixed
+- Hardened updater detection against release metadata drift so startup and scheduled checks consistently identify available updates.
+- Fixed post-update silent relaunch behavior to reliably bring MGG Pulse back online after installer handoff.
+- Improved startup registry/minimized launch survival so **Start minimized** remains stable across update and relaunch paths.
+
+---
+
 ## [1.3.2] — 2026-04-16
 
 ### Added
@@ -64,7 +73,8 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ---
 
-[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/mgg-171093/mgg-pulse/compare/v1.3.3...HEAD
+[1.3.3]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.3
 [1.3.2]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.2
 [1.3.1]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.1
 [1.3.0]: https://github.com/mgg-171093/mgg-pulse/releases/tag/v1.3.0

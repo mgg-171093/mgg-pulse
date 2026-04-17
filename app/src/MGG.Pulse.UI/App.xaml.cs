@@ -70,7 +70,14 @@ public partial class App : Microsoft.UI.Xaml.Application
             // Intercept window close → hide to tray (unless we're really exiting)
             _mainWindow.AppWindow.Closing += OnMainWindowClosing;
 
-            if (!config.StartMinimized)
+            if (config.StartMinimized)
+            {
+                // Activate first so WinUI keeps the app lifetime bound to a real window,
+                // then hide it immediately to honor the minimized startup UX.
+                _mainWindow.Activate();
+                _mainWindow.AppWindow.Hide();
+            }
+            else
             {
                 _mainWindow.Activate();
             }
