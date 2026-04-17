@@ -25,22 +25,12 @@ public sealed partial class ShellPage : Page
         ViewModel = App.Services.GetRequiredService<ShellViewModel>();
         Loaded += ShellPage_Loaded;
         ActualThemeChanged += ShellPage_ActualThemeChanged;
-        NavView.IsSettingsVisible = true;
-        if (NavView.SettingsItem is NavigationViewItem settingsItem)
+        foreach (var footerItem in NavView.FooterMenuItems.OfType<NavigationViewItem>())
         {
-            settingsItem.Content = "Configuración";
-            settingsItem.GotFocus += NavItem_GotFocus;
-            settingsItem.LostFocus += NavItem_LostFocus;
-            settingsItem.PointerEntered += NavItem_PointerEntered;
-            settingsItem.PointerExited += NavItem_PointerExited;
-        }
-
-        if (NavView.FooterMenuItems.FirstOrDefault() is NavigationViewItem exitItem)
-        {
-            exitItem.GotFocus += NavItem_GotFocus;
-            exitItem.LostFocus += NavItem_LostFocus;
-            exitItem.PointerEntered += NavItem_PointerEntered;
-            exitItem.PointerExited += NavItem_PointerExited;
+            footerItem.GotFocus += NavItem_GotFocus;
+            footerItem.LostFocus += NavItem_LostFocus;
+            footerItem.PointerEntered += NavItem_PointerEntered;
+            footerItem.PointerExited += NavItem_PointerExited;
         }
 
         // Navigate to Dashboard by default
@@ -56,19 +46,19 @@ public sealed partial class ShellPage : Page
             return;
         }
 
-        if (args.IsSettingsSelected)
-        {
-            _lastNavigableSelection = sender.SettingsItem;
-            ContentFrame.Navigate(typeof(SettingsPage));
-            return;
-        }
-
         if (args.SelectedItem is not NavigationViewItem item)
         {
             return;
         }
 
         var tag = item.Tag?.ToString();
+        if (string.Equals(tag, "Settings", StringComparison.Ordinal))
+        {
+            _lastNavigableSelection = item;
+            ContentFrame.Navigate(typeof(SettingsPage));
+            return;
+        }
+
         if (string.Equals(tag, "Exit", StringComparison.Ordinal))
         {
             RestorePreviousSelection(sender);

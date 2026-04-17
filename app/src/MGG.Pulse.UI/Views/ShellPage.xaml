@@ -16,28 +16,30 @@
             x:Name="NavView"
             AlwaysShowHeader="True"
             IsBackButtonVisible="Collapsed"
-            IsSettingsVisible="True"
+            IsPaneOpen="True"
+            IsPaneToggleButtonVisible="False"
+            IsSettingsVisible="False"
             PaneDisplayMode="Left"
             SelectionChanged="NavView_SelectionChanged">
 
-            <NavigationView.PaneHeader>
+            <NavigationView.PaneCustomContent>
                 <Border
-                    Margin="8"
-                    Padding="8"
-                    Background="{ThemeResource SurfaceVariantBrush}"
-                    CornerRadius="8">
+                    Margin="4,4,4,4"
+                    Padding="2"
+                    Background="{ThemeResource SidebarSurfaceBrush}"
+                    CornerRadius="4">
                     <Image
-                        Width="170"
-                        Height="52"
-                        HorizontalAlignment="Left"
+                        Width="300"
+                        Height="110"
+                        HorizontalAlignment="Center"
                         Source="ms-appx:///Assets/logo-sidebar.png"
                         Stretch="Uniform" />
                 </Border>
-            </NavigationView.PaneHeader>
+            </NavigationView.PaneCustomContent>
 
             <NavigationView.MenuItems>
                 <NavigationViewItem
-                    Content="Panel"
+                    Content="Dashboard"
                     Icon="Home"
                     GotFocus="NavItem_GotFocus"
                     LostFocus="NavItem_LostFocus"
@@ -72,8 +74,12 @@
 
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem
+                    Content="Configuración"
+                    Icon="Setting"
+                    Tag="Settings" />
+                <NavigationViewItem
                     Content="Salir"
-                    Icon="Leave"
+                    Icon="Cancel"
                     Tag="Exit" />
             </NavigationView.FooterMenuItems>
 

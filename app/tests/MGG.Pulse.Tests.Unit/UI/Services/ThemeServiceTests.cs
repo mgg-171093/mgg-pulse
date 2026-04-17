@@ -239,8 +239,9 @@ public class ThemeServiceTests
         var shell = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml"));
 
         Assert.DoesNotContain("Content=\"Settings\"", shell, StringComparison.Ordinal);
-        Assert.Contains("IsSettingsVisible=\"True\"", shell, StringComparison.Ordinal);
-        Assert.Contains("Content=\"Panel\"", shell, StringComparison.Ordinal);
+        Assert.Contains("IsSettingsVisible=\"False\"", shell, StringComparison.Ordinal);
+        Assert.Contains("Content=\"Configuración\"", shell, StringComparison.Ordinal);
+        Assert.Contains("Content=\"Dashboard\"", shell, StringComparison.Ordinal);
         Assert.Contains("Content=\"Apariencia\"", shell, StringComparison.Ordinal);
         Assert.Contains("Content=\"Registros\"", shell, StringComparison.Ordinal);
         Assert.Contains("Content=\"Acerca de\"", shell, StringComparison.Ordinal);
@@ -251,9 +252,9 @@ public class ThemeServiceTests
     {
         var shellCodeBehind = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml.cs"));
 
-        Assert.Contains("args.IsSettingsSelected", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("string.Equals(tag, \"Settings\", StringComparison.Ordinal)", shellCodeBehind, StringComparison.Ordinal);
         Assert.Contains("ContentFrame.Navigate(typeof(SettingsPage));", shellCodeBehind, StringComparison.Ordinal);
-        Assert.Contains("settingsItem.Content = \"Configuración\"", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("_lastNavigableSelection = item;", shellCodeBehind, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -301,9 +302,9 @@ public class ThemeServiceTests
     {
         var shellCodeBehind = File.ReadAllText(ResolveUiFilePath("Views", "ShellPage.xaml.cs"));
 
-        Assert.Contains("if (NavView.FooterMenuItems.FirstOrDefault() is NavigationViewItem exitItem)", shellCodeBehind, StringComparison.Ordinal);
-        Assert.Contains("exitItem.GotFocus += NavItem_GotFocus;", shellCodeBehind, StringComparison.Ordinal);
-        Assert.Contains("exitItem.PointerEntered += NavItem_PointerEntered;", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("foreach (var footerItem in NavView.FooterMenuItems.OfType<NavigationViewItem>())", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("footerItem.GotFocus += NavItem_GotFocus;", shellCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("footerItem.PointerEntered += NavItem_PointerEntered;", shellCodeBehind, StringComparison.Ordinal);
     }
 
     [Fact]
