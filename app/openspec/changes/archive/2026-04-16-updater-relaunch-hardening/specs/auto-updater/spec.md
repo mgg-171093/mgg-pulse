@@ -1,10 +1,12 @@
-# Auto Updater Specification
+# Delta for Auto Updater
 
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: latest.json Contract and Polling
 
 The system MUST consume a `latest.json` manifest containing at least `version`, `url`, and `sha256`. It MUST compare the installed version against that manifest at startup and every 4 hours thereafter. The startup check MUST retry transient fetch failures a bounded number of times before giving up, and SHALL keep the normal periodic cadence even when startup retries are exhausted.
+
+(Previously: The system compared the installed version against the manifest at startup and every 4 hours thereafter without specifying startup retry behavior.)
 
 #### Scenario: Startup retry finds a newer release
 

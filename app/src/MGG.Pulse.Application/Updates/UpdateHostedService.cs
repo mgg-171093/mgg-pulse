@@ -11,9 +11,18 @@ namespace MGG.Pulse.Application.Updates;
 /// </summary>
 public sealed class UpdateHostedService : IDisposable
 {
+    private const int MaxStartupAttempts = 3;
+    private static readonly TimeSpan[] DefaultStartupRetryDelays =
+    [
+        TimeSpan.FromSeconds(5),
+        TimeSpan.FromSeconds(20),
+        TimeSpan.FromSeconds(80)
+    ];
+
     private readonly CheckForUpdateUseCase _checkForUpdateUseCase;
     private readonly ITimeProvider _timeProvider;
     private readonly TimeSpan _startupDelay;
+    private readonly IReadOnlyList<TimeSpan> _startupRetryDelays;
 
     private CancellationTokenSource? _cts;
     private IDisposable? _periodicTimer;
@@ -27,13 +36,25 @@ public sealed class UpdateHostedService : IDisposable
     public UpdateHostedService(
         CheckForUpdateUseCase checkForUpdateUseCase,
         ITimeProvider timeProvider,
-        TimeSpan? startupDelay = null)
+        TimeSpan? startupDelay = null,
+        IReadOnlyList<TimeSpan>? startupRetryDelays = null)
     {
         _checkForUpdateUseCase = checkForUpdateUseCase
             ?? throw new ArgumentNullException(nameof(checkForUpdateUseCase));
         _timeProvider = timeProvider
             ?? throw new ArgumentNullException(nameof(timeProvider));
         _startupDelay = startupDelay ?? TimeSpan.FromSeconds(5);
+        _startupRetryDelays = startupRetryDelays ?? DefaultStartupRetryDelays;
+
+        if (_startupRetryDelays.Count == 0)
+        {
+            throw new ArgumentException("Startup retry delays cannot be empty.", nameof(startupRetryDelays));
+        }
+
+        if (_startupRetryDelays.Any(delay => delay < TimeSpan.Zero))
+        {
+            throw new ArgumentException("Startup retry delays cannot contain negative values.", nameof(startupRetryDelays));
+        }
     }
 
     /// <summary>
@@ -50,13 +71,13 @@ public sealed class UpdateHostedService : IDisposable
         _ = Task.Run(async () =>
         {
             await Task.Delay(_startupDelay, token).ConfigureAwait(false);
-            await RunCheckSafeAsync(token).ConfigureAwait(false);
+            await RunCheckSafeAsync(token, isStartupCheck: true).ConfigureAwait(false);
         }, token);
 
         // Periodic 4-hour timer
         _periodicTimer = _timeProvider.CreateTimer(
             period: TimeSpan.FromHours(4),
-            callback: RunCheckSafeAsync,
+            callback: token => RunCheckSafeAsync(token, isStartupCheck: false),
             cancellationToken: token);
 
         return Task.CompletedTask;
@@ -81,7 +102,45 @@ public sealed class UpdateHostedService : IDisposable
 
     // ─────────────────────────────────────────────────────────────────────────
 
-    private async Task RunCheckSafeAsync(CancellationToken cancellationToken)
+    private async Task RunCheckSafeAsync(CancellationToken cancellationToken, bool isStartupCheck)
+    {
+        if (isStartupCheck)
+        {
+            await RunStartupCheckWithRetryAsync(cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        _ = await ExecuteSingleAttemptSafeAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task RunStartupCheckWithRetryAsync(CancellationToken cancellationToken)
+    {
+        for (var attempt = 1; attempt <= MaxStartupAttempts; attempt++)
+        {
+            var shouldStopRetrying = await ExecuteSingleAttemptSafeAsync(cancellationToken).ConfigureAwait(false);
+            if (shouldStopRetrying)
+            {
+                return;
+            }
+
+            if (attempt == MaxStartupAttempts)
+            {
+                return;
+            }
+
+            var retryDelay = GetRetryDelayForAttempt(attempt);
+            await Task.Delay(retryDelay, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private TimeSpan GetRetryDelayForAttempt(int attempt)
+    {
+        // attempt=1 -> first retry delay, attempt=2 -> second retry delay, etc.
+        var retryIndex = Math.Clamp(attempt - 1, 0, _startupRetryDelays.Count - 1);
+        return _startupRetryDelays[retryIndex];
+    }
+
+    private async Task<bool> ExecuteSingleAttemptSafeAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -93,14 +152,19 @@ public sealed class UpdateHostedService : IDisposable
             {
                 UpdateAvailable?.Invoke(result.Value);
             }
+
+            // Successful execution (with or without update) should stop startup retries.
+            return result.IsSuccess;
         }
         catch (OperationCanceledException)
         {
             // Normal shutdown — swallow silently
+            return true;
         }
         catch
         {
-            // Network errors, parse errors etc. — swallow silently, try again next cycle
+            // Network errors, parse errors etc. — swallow silently, try again based on caller policy
+            return false;
         }
     }
 }

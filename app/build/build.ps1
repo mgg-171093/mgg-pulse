@@ -5,7 +5,7 @@
 
 .DESCRIPTION
     1. Reads Version from Directory.Build.props (or $Version parameter)
-    2. Runs dotnet publish (win-x64, Release, self-contained)
+    2. Runs dotnet publish (win-x64, Release, framework-dependent)
     3. Calls tools/gen-icon.ps1 to produce icon.ico
     4. Compiles the installer with Inno Setup (iscc)
     5. Outputs MGGPulse-Setup-{version}.exe to build/output/
@@ -23,7 +23,7 @@
 
 [CmdletBinding()]
 param(
-    [string] $Version   = '',
+    [string] $Version = '',
     [switch] $SkipIco
 )
 
@@ -52,7 +52,7 @@ if (-not $Version) {
 
     if (-not $Version) {
         $Version = '1.0.0'
-        Write-Warning "<Version> not found in Directory.Build.props/.csproj — defaulting to $Version"
+        Write-Warning "<Version> not found in Directory.Build.props/.csproj - defaulting to $Version"
     }
 }
 
@@ -80,7 +80,8 @@ if ($LASTEXITCODE -ne 0) { Write-Error "dotnet publish failed"; exit 1 }
 if (-not $SkipIco) {
     Write-Host "[2/4] Generating icon.ico ..."
     & pwsh -File $GenIco
-} else {
+}
+else {
     Write-Host "[2/4] Skipping icon generation (SkipIco set)"
 }
 
@@ -103,7 +104,8 @@ Inno Setup not found. Installer was NOT compiled.
 Install Inno Setup 6 and re-run:  build\build.ps1
 Download: https://jrsoftware.org/isdl.php
 "@
-} else {
+}
+else {
     Write-Host "[3/4] Compiling installer with Inno Setup ..."
     & $iscc $IssScript "/DAppVersion=$Version" "/DPublishDir=$PublishDir" "/DOutputDir=$OutputDir"
     if ($LASTEXITCODE -ne 0) { Write-Error "ISCC failed"; exit 1 }

@@ -8,7 +8,7 @@ Define el comportamiento del ícono en la bandeja del sistema que permite operar
 
 ### Requirement: Tray Icon Always Visible When Running
 
-El sistema MUST mostrar un ícono en la bandeja del sistema mientras la aplicación esté en ejecución, independientemente del estado de la ventana principal.
+El sistema MUST mostrar un ícono en la bandeja del sistema mientras la aplicación esté en ejecución, independientemente del estado de la ventana principal. Cuando "Start minimized" está habilitado, el sistema MUST mantener viva la app después de cerrar el splash, SHALL conservar la ventana principal creada pero oculta al usuario, y MUST NOT finalizar el proceso por quedar sin una ventana visible.
 
 #### Scenario: App minimized to tray
 
@@ -20,9 +20,10 @@ El sistema MUST mostrar un ícono en la bandeja del sistema mientras la aplicaci
 #### Scenario: App started minimized
 
 - GIVEN la opción "Start minimized" está habilitada
-- WHEN la aplicación inicia
-- THEN la ventana principal NO se muestra
-- AND el ícono del tray está visible inmediatamente
+- AND el splash completó la inicialización
+- WHEN la aplicación cierra el splash
+- THEN la ventana principal permanece oculta
+- AND el proceso sigue vivo con el ícono del tray visible
 
 ### Requirement: Tray Context Menu
 

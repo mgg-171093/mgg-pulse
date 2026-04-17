@@ -1,10 +1,12 @@
-# About and Versioning Specification
+# Delta for About and Versioning
 
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: About Version Surface
 
 The system MUST provide an About page that shows the installed application version and a manual Check for Updates action. That manual action MUST remain user-driven and SHALL report success or failure inline even when automatic startup retries and silent-install handoff are enabled elsewhere.
+
+(Previously: The About page showed the installed version and a manual Check for Updates action, without guarding its behavior against new automatic updater flows.)
 
 #### Scenario: About page shows current version
 

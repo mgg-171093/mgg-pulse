@@ -55,8 +55,28 @@ public class UpdateHostedServiceTests
             .ReturnsAsync(_noUpdateResult);
     }
 
-    private UpdateHostedService BuildService() =>
-        new(_mockUseCase.Object, _mockTimeProvider.Object, startupDelay: TimeSpan.Zero);
+    private UpdateHostedService BuildService(
+        TimeSpan? startupDelay = null,
+        IReadOnlyList<TimeSpan>? startupRetryDelays = null) =>
+        new(
+            _mockUseCase.Object,
+            _mockTimeProvider.Object,
+            startupDelay: startupDelay ?? TimeSpan.Zero,
+            startupRetryDelays: startupRetryDelays);
+
+    private int CountExecuteCalls() =>
+        _mockUseCase
+            .Invocations
+            .Count(i => i.Method.Name == nameof(CheckForUpdateUseCase.ExecuteAsync));
+
+    private static async Task WaitUntilAsync(Func<bool> condition, int timeoutMs = 1500)
+    {
+        var started = DateTime.UtcNow;
+        while (!condition() && DateTime.UtcNow - started < TimeSpan.FromMilliseconds(timeoutMs))
+        {
+            await Task.Delay(25);
+        }
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     //  Startup behavior
@@ -98,6 +118,96 @@ public class UpdateHostedServiceTests
         _mockUseCase.Verify(
             u => u.ExecuteAsync(It.IsAny<CancellationToken>()),
             Times.AtLeastOnce);
+
+        await sut.StopAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task StartAsync_WhenStartupCheckFailsTransiently_RetriesUntilSuccess()
+    {
+        // Arrange
+        _mockUseCase
+            .SetupSequence(u => u.ExecuteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<UpdateCheckResult>.Fail("transient-1"))
+            .ReturnsAsync(Result<UpdateCheckResult>.Fail("transient-2"))
+            .ReturnsAsync(_noUpdateResult);
+
+        var sut = BuildService(startupRetryDelays: new[]
+        {
+            TimeSpan.Zero,
+            TimeSpan.Zero,
+            TimeSpan.Zero
+        });
+
+        // Act
+        await sut.StartAsync(CancellationToken.None);
+        await WaitUntilAsync(() => CountExecuteCalls() >= 3);
+
+        // Assert
+        Assert.Equal(3, CountExecuteCalls());
+
+        await sut.StopAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task StartAsync_WhenRetrySucceedsWithNewerVersion_RaisesUpdateAvailableEvent()
+    {
+        // Arrange
+        var updateResult = UpdateCheckResult.Available(
+            version: "1.1.0",
+            url: "https://example.com/setup.exe",
+            sha256: "abc123");
+
+        _mockUseCase
+            .SetupSequence(u => u.ExecuteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<UpdateCheckResult>.Fail("transient-1"))
+            .ReturnsAsync(Result<UpdateCheckResult>.Ok(updateResult));
+
+        UpdateCheckResult? raisedResult = null;
+
+        var sut = BuildService(startupRetryDelays: new[]
+        {
+            TimeSpan.Zero,
+            TimeSpan.Zero,
+            TimeSpan.Zero
+        });
+        sut.UpdateAvailable += result => raisedResult = result;
+
+        // Act
+        await sut.StartAsync(CancellationToken.None);
+        await WaitUntilAsync(() => raisedResult is not null);
+
+        // Assert
+        Assert.NotNull(raisedResult);
+        Assert.True(raisedResult!.UpdateAvailable);
+        Assert.Equal("1.1.0", raisedResult.AvailableVersion);
+        Assert.Equal(2, CountExecuteCalls());
+
+        await sut.StopAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task StartAsync_WhenStartupCheckKeepsFailing_StopsAfterThreeAttempts()
+    {
+        // Arrange
+        _mockUseCase
+            .Setup(u => u.ExecuteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<UpdateCheckResult>.Fail("always-fail"));
+
+        var sut = BuildService(startupRetryDelays: new[]
+        {
+            TimeSpan.Zero,
+            TimeSpan.Zero,
+            TimeSpan.Zero
+        });
+
+        // Act
+        await sut.StartAsync(CancellationToken.None);
+        await WaitUntilAsync(() => CountExecuteCalls() >= 3);
+        await Task.Delay(150);
+
+        // Assert
+        Assert.Equal(3, CountExecuteCalls());
 
         await sut.StopAsync(CancellationToken.None);
     }
@@ -154,6 +264,36 @@ public class UpdateHostedServiceTests
             () => _registeredCallbacks[0](CancellationToken.None));
 
         Assert.Null(exception);
+
+        await sut.StopAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task PeriodicCallback_WhenCheckFails_DoesSingleAttemptWithoutInternalRetry()
+    {
+        // Arrange
+        _mockUseCase
+            .Setup(u => u.ExecuteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_noUpdateResult);
+
+        var sut = BuildService(
+            startupDelay: TimeSpan.FromHours(1),
+            startupRetryDelays: new[] { TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero });
+
+        await sut.StartAsync(CancellationToken.None);
+
+        _mockUseCase.Invocations.Clear();
+        _mockUseCase
+            .Setup(u => u.ExecuteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<UpdateCheckResult>.Fail("periodic-fail"));
+
+        // Act
+        Assert.NotEmpty(_registeredCallbacks);
+        await _registeredCallbacks[0](CancellationToken.None);
+        await Task.Delay(100);
+
+        // Assert
+        Assert.Equal(1, CountExecuteCalls());
 
         await sut.StopAsync(CancellationToken.None);
     }
