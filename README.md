@@ -257,7 +257,7 @@ Config in `%AppData%` is **never overwritten on upgrade** — your settings surv
 | [`app/CHANGELOG.md`](app/CHANGELOG.md) | All | Version history, per-change summary |
 | [`app/openspec/`](app/openspec/) | Devs / AI | SDD specs, proposals, designs, task lists |
 | [`app/README.md`](app/README.md) | App devs | Build, test, and project structure reference |
-| [`app/build/latest.json`](app/build/latest.json) | Release | Update manifest schema — fill before each GitHub Release |
+| [`app/build/latest.json`](app/build/latest.json) | Release | Raw-main update manifest schema — auto-updated by `.github/workflows/release.yml` |
 | [`app/build/pulse.iss`](app/build/pulse.iss) | Build | Inno Setup installer script |
 | [`app/build/build.ps1`](app/build/build.ps1) | Build | Full release pipeline orchestrator |
 
