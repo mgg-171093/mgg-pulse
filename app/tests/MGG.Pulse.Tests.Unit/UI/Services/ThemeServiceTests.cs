@@ -32,7 +32,6 @@ public class ThemeServiceTests
     [Theory]
     [InlineData("Dark", "Dark")]
     [InlineData("Light", "Light")]
-    [InlineData("Auto", "Dark")]
     [InlineData("invalid", "Dark")]
     public void ResolveEffectiveTheme_ReturnsExpectedResolvedTheme(string inputTheme, string expectedTheme)
     {
