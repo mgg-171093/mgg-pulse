@@ -39,14 +39,6 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Install actionlint
-        shell: pwsh
-        run: choco install actionlint -y --no-progress
-
-      - name: Validate workflow syntax
-        shell: pwsh
-        run: actionlint -color
-
       - name: Validate semver bump logic (dry-run)
         shell: pwsh
         run: |

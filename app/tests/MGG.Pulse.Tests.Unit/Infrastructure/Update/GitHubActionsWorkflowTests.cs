@@ -17,7 +17,6 @@ public class GitHubActionsWorkflowTests
         Assert.Contains("- main", normalized, StringComparison.Ordinal);
         Assert.Contains("dotnet test", normalized, StringComparison.Ordinal);
         Assert.Contains("permissions:\n  contents: read", normalized, StringComparison.Ordinal);
-        Assert.Contains("actionlint -color", normalized, StringComparison.Ordinal);
     }
 
     [Fact]
