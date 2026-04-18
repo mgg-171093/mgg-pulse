@@ -81,6 +81,21 @@ Output: `build/output/MGGPulse-Setup-{version}.exe`
 
 ---
 
+## CI/CD Automation (GitHub Actions)
+
+Automation is split into two workflows at repository root:
+
+- `.github/workflows/ci.yml` — validates PRs and `develop` pushes (restore, build, tests, workflow YAML checks).
+- `.github/workflows/release.yml` — runs release-readiness checks for PRs targeting `main`, and performs real release automation on pushes to `main`.
+
+Release automation keeps the **raw-main manifest model**:
+
+- `app/build/latest.json` is updated and committed on `main`.
+- The updater keeps consuming the raw file URL from `main`.
+- `latest.json` is **not** uploaded as a GitHub Release asset.
+
+---
+
 ## Features
 
 | Feature | Description |

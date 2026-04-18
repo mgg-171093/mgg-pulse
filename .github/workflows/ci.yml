@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - ".github/workflows/**"
+      - "app/Directory.Build.props"
+      - "app/MGG.Pulse.slnx"
+      - "app/src/**"
+      - "app/tests/**"
+      - "app/build/**"
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - ".github/workflows/**"
+      - "app/Directory.Build.props"
+      - "app/MGG.Pulse.slnx"
+      - "app/src/**"
+      - "app/tests/**"
+      - "app/build/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build and test validation
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Validate workflow YAML syntax
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path ".github/workflows" -Filter "*.yml" | ForEach-Object {
+            $null = Get-Content $_.FullName -Raw | ConvertFrom-Yaml
+          }
+
+      - name: Restore
+        run: dotnet restore app/MGG.Pulse.slnx
+
+      - name: Build
+        run: dotnet build app/MGG.Pulse.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build
