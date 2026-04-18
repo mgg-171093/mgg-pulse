@@ -8,14 +8,16 @@ public class GitHubActionsWorkflowTests
     public void CiWorkflow_UsesWindowsRunner_AndRunsValidationOnDevelopAndRelevantPrs()
     {
         var ciWorkflow = File.ReadAllText(ResolveRepoFilePath(".github", "workflows", "ci.yml"));
+        var normalized = NormalizeLineEndings(ciWorkflow);
 
-        Assert.Contains("runs-on: windows-latest", ciWorkflow, StringComparison.Ordinal);
-        Assert.Contains("push:", ciWorkflow, StringComparison.Ordinal);
-        Assert.Contains("- develop", ciWorkflow, StringComparison.Ordinal);
-        Assert.Contains("pull_request:", ciWorkflow, StringComparison.Ordinal);
-        Assert.Contains("- main", ciWorkflow, StringComparison.Ordinal);
-        Assert.Contains("dotnet test", ciWorkflow, StringComparison.Ordinal);
-        Assert.Contains("permissions:\n  contents: read", ciWorkflow, StringComparison.Ordinal);
+        Assert.Contains("runs-on: windows-latest", normalized, StringComparison.Ordinal);
+        Assert.Contains("push:", normalized, StringComparison.Ordinal);
+        Assert.Contains("- develop", normalized, StringComparison.Ordinal);
+        Assert.Contains("pull_request:", normalized, StringComparison.Ordinal);
+        Assert.Contains("- main", normalized, StringComparison.Ordinal);
+        Assert.Contains("dotnet test", normalized, StringComparison.Ordinal);
+        Assert.Contains("permissions:\n  contents: read", normalized, StringComparison.Ordinal);
+        Assert.Contains("actionlint -color", normalized, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -82,4 +84,7 @@ public class GitHubActionsWorkflowTests
 
         throw new FileNotFoundException($"Unable to locate repo file '{Path.Combine(relativeSegments)}' from '{AppContext.BaseDirectory}'.");
     }
+
+    private static string NormalizeLineEndings(string value)
+        => value.Replace("\r\n", "\n", StringComparison.Ordinal);
 }
