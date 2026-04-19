@@ -11,8 +11,8 @@
     "OPTIONAL fields:",
     "  notes    — short release notes shown to the user before updating"
   ],
-  "version": "1.3.5",
-  "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.3.5/MGGPulse-Setup-1.3.5.exe",
-  "sha256": "a4cb85aacdef156d206965947986d795b03bd43330c9a1dc6a921e0858b29ce2",
+  "version": "1.3.6",
+  "url": "https://github.com/mgg-171093/mgg-pulse/releases/download/v1.3.6/MGGPulse-Setup-1.3.6.exe",
+  "sha256": "32c45f9432345ad8cfb9bb73f0a279de6b888c06b1cbd1b8b080f732375a2d8b",
   "notes": "Automated release via GitHub Actions."
 }
