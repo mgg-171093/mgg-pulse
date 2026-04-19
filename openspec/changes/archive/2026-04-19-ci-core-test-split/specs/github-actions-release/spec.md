@@ -1,14 +1,11 @@
-# github-actions-release Specification
+# Delta for github-actions-release
 
-## Purpose
-
-Define dry-run release validation for pull requests and deterministic publishing for `main`.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Side-effect-free release validation
 
 The release validation workflow for pull requests to `main` MUST validate release prerequisites without publishing assets, creating releases or tags, mutating committed files, or pushing commits. When automated tests run in this workflow, the test step MUST target the CI-safe test project explicitly and MUST NOT rely on UI/WinRT-bound test discovery.
+(Previously: Release validation was dry-run only, but did not require an explicit CI-safe test target.)
 
 #### Scenario: Pull request readiness is dry-run only
 
@@ -34,6 +31,7 @@ The release validation workflow for pull requests to `main` MUST validate releas
 ### Requirement: Deterministic main publishing
 
 The publish workflow on pushes to `main` MUST build a single release artifact from the already-committed main revision, compute checksum and download metadata from that exact artifact, and publish only after all pre-publish steps succeed. It MUST use the CI-safe test project explicitly for hosted automated tests and MUST NOT leave `main` half-mutated when any publish step fails.
+(Previously: Deterministic publishing required pre-publish success, but did not require an explicit CI-safe test target.)
 
 #### Scenario: Publish succeeds from one authoritative artifact
 
@@ -55,24 +53,3 @@ The publish workflow on pushes to `main` MUST build a single release artifact fr
 - WHEN pre-publish tests execute
 - THEN the workflow MUST target the CI-safe test project explicitly
 - AND only CI-safe coverage SHALL gate publishing
-
-### Requirement: latest.json remains repository state
-
-The system MUST keep `app/build/latest.json` committed on `main` and MUST NOT publish `latest.json` as a release asset.
-
-#### Scenario: Manifest is updated after successful publish
-
-- GIVEN release publication succeeds
-- WHEN release metadata is finalized
-- THEN `app/build/latest.json` SHALL be committed on `main` with the release version, URL, and SHA-256
-- AND GitHub Release assets SHALL contain only distributable installer artifacts
-
-### Requirement: Dependency minimization for publishing
-
-The publish workflow SHOULD prefer GitHub-provided actions, repository-contained scripts, and pinned tooling paths over flaky external package feeds where possible.
-
-#### Scenario: Packaging tool acquisition is chosen
-
-- GIVEN release packaging needs non-default tooling
-- WHEN a stable pinned or repository-contained path exists
-- THEN the workflow SHOULD use that path before relying on a mutable external feed

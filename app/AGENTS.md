@@ -18,13 +18,15 @@ The app runs silently in the background via System Tray and simulates minimal, n
   - `MGG.Pulse.Application` — Use Cases, Rule Engine, Cycle Orchestrator. Depends only on Domain.
   - `MGG.Pulse.Infrastructure` — Win32 adapters, JSON config repo, file logger, tray service.
   - `MGG.Pulse.UI` — WinUI 3 views, ViewModels (CommunityToolkit.Mvvm), Composition Root.
-  - `MGG.Pulse.Tests.Unit` — xUnit + Moq tests for Domain and Application layers.
+  - `MGG.Pulse.Tests.Core` — xUnit + Moq CI-safe tests for Domain/Application/Infrastructure-safe logic.
+  - `MGG.Pulse.Tests.UI` — xUnit + Moq local-only tests for UI/WinRT-bound logic.
 
 ### Dependency Rule (CRITICAL)
 ```
 UI → Application → Domain
 Infrastructure → Domain (implements ports)
-Tests.Unit → Domain + Application (mocks Infrastructure)
+Tests.Core → Domain + Application + Infrastructure (no UI references)
+Tests.UI → UI + Domain + Application + Infrastructure (local-only)
 ```
 **Domain MUST have zero references to any other project or NuGet package.**
 
@@ -83,7 +85,8 @@ mgg-pulse/
 │   ├── MGG.Pulse.Infrastructure/
 │   └── MGG.Pulse.UI/
 ├── tests/
-│   └── MGG.Pulse.Tests.Unit/
+│   ├── MGG.Pulse.Tests.Core/
+│   └── MGG.Pulse.Tests.UI/
 ├── assets/
 │   └── branding/
 │       └── logo.png          ← REPLACE THIS to update the logo everywhere

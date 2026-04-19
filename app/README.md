@@ -13,7 +13,8 @@ MGG.Pulse.Application     ← Use Cases, Rule Engine, CycleOrchestrator, UpdateH
 MGG.Pulse.Infrastructure  ← Win32 adapters, JSON config, file logger, tray service, update service
 MGG.Pulse.UI              ← WinUI 3 shell (ShellPage, Dashboard, Settings, About, Splash)
                              ViewModels (CommunityToolkit.Mvvm)
-MGG.Pulse.Tests.Unit      ← xUnit + Moq — Domain and Application layer tests
+MGG.Pulse.Tests.Core      ← xUnit + Moq — CI-safe Domain/Application/Infrastructure tests
+MGG.Pulse.Tests.UI        ← xUnit + Moq — local-only UI/WinRT-bound tests
 ```
 
 **Dependency rule**: `UI → Application → Domain`. Infrastructure implements Domain ports. Domain has **zero** external dependencies.
@@ -50,17 +51,17 @@ dotnet run --project src/MGG.Pulse.UI/MGG.Pulse.UI.csproj
 ## Run Tests
 
 ```powershell
-# All unit tests
-dotnet test tests/MGG.Pulse.Tests.Unit
+# Core tests (CI-safe)
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj
+
+# UI tests (local-only)
+dotnet test tests/MGG.Pulse.Tests.UI/MGG.Pulse.Tests.UI.csproj
 
 # Verbose output
-dotnet test tests/MGG.Pulse.Tests.Unit --logger "console;verbosity=detailed"
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --logger "console;verbosity=detailed"
 
 # Filter by class
-dotnet test tests/MGG.Pulse.Tests.Unit --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
-
-# CI-safe only (exclude local-only WinRT/UI-bound tests)
-dotnet test tests/MGG.Pulse.Tests.Unit --filter "Category!=Integration"
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
 ```
 
 ---
@@ -189,7 +190,8 @@ app/
 │   └── MGG.Pulse.UI/
 │
 ├── tests/
-│   └── MGG.Pulse.Tests.Unit/
+│   ├── MGG.Pulse.Tests.Core/
+│   └── MGG.Pulse.Tests.UI/
 │
 └── openspec/                      ← SDD specs, proposals, designs, task lists
 ```

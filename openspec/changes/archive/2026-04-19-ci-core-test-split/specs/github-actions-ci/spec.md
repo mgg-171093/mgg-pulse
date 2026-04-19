@@ -1,14 +1,11 @@
-# github-actions-ci Specification
+# Delta for github-actions-ci
 
-## Purpose
-
-Define hosted-runner validation that stays reliable for pull requests and branch validation.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Hosted-runner-safe validation
 
 The CI workflow MUST complete on GitHub-hosted runners using restore, build, and an explicitly named CI-safe test project whose discovery path does not load UI/WinRT-bound assemblies or types. It MUST NOT require WinRT UI automation, tray interaction, installer execution, or UI-bound test binaries during hosted validation.
+(Previously: CI-safe tests were required, but the workflow did not require a discovery-safe project boundary.)
 
 #### Scenario: Pull request uses CI-safe project
 
@@ -27,6 +24,7 @@ The CI workflow MUST complete on GitHub-hosted runners using restore, build, and
 ### Requirement: Test partitioning
 
 The project SHALL support a split between a CI-safe test project and a separate local-only test project or equivalently isolated path when a scenario cannot run reliably on hosted runners. The CI-safe project MUST preserve meaningful automated coverage for Domain, Application, and Infrastructure-safe logic.
+(Previously: The split allowed local-only classification but did not require an isolated path or preserved core-layer coverage.)
 
 #### Scenario: New non-CI-safe coverage is added
 
@@ -41,13 +39,3 @@ The project SHALL support a split between a CI-safe test project and a separate 
 - WHEN the suite is split
 - THEN those tests MUST remain in the CI-safe project
 - AND hosted CI SHALL continue executing meaningful core-layer coverage
-
-### Requirement: Dependency minimization for validation
-
-The CI workflow SHOULD avoid flaky external feeds when a GitHub-provided, runner-resident, or repository-contained option exists.
-
-#### Scenario: Stable tooling path exists
-
-- GIVEN a validation step needs auxiliary tooling
-- WHEN a stable built-in or repository-pinned option exists
-- THEN CI SHOULD use that option instead of a mutable external feed

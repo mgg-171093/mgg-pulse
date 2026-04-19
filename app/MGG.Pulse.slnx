@@ -6,6 +6,7 @@
     <Project Path="src/MGG.Pulse.UI/MGG.Pulse.UI.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj" />
+    <Project Path="tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj" />
+    <Project Path="tests/MGG.Pulse.Tests.UI/MGG.Pulse.Tests.UI.csproj" />
   </Folder>
 </Solution>
