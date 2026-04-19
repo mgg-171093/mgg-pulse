@@ -53,4 +53,4 @@ jobs:
         run: dotnet build app/MGG.Pulse.slnx --configuration Release --no-restore
 
       - name: Test (CI-safe only)
-        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build --filter "Category!=Integration"
+        run: dotnet test app/tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --configuration Release --no-build

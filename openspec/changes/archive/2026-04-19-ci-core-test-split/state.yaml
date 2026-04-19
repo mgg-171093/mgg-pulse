@@ -1,0 +1,25 @@
+change: 2026-04-19-ci-core-test-split
+mode: hybrid
+updated_at: 2026-04-19
+phase: apply
+status: ready-for-verify
+last_apply_batch: full-implementation
+last_apply_focus: physical-core-ui-test-project-split-for-hosted-ci-reliability
+artifacts:
+  proposal:
+    - proposal.md
+    - engram:sdd/2026-04-19-ci-core-test-split/proposal
+  spec:
+    - specs/github-actions-ci/spec.md
+    - specs/github-actions-release/spec.md
+    - engram:sdd/2026-04-19-ci-core-test-split/spec
+  design:
+    - design.md
+    - engram:sdd/2026-04-19-ci-core-test-split/design
+  tasks:
+    - tasks.md
+    - engram:sdd/2026-04-19-ci-core-test-split/tasks
+  apply_progress:
+    - apply-progress.md
+    - engram:sdd/2026-04-19-ci-core-test-split/apply-progress
+next_recommended: sdd-verify

@@ -5,7 +5,7 @@
 [![WinUI 3](https://img.shields.io/badge/WinUI_3-Windows_App_SDK_1.5-0078D4?style=flat-square&logo=windows&logoColor=white)](https://learn.microsoft.com/en-us/windows/apps/winui/winui3/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows/)
-[![Unit Tests](https://img.shields.io/badge/Unit%20Tests-passing-brightgreen?style=flat-square)](./app/tests/MGG.Pulse.Tests.Unit)
+[![Core Tests](https://img.shields.io/badge/Core%20Tests-passing-brightgreen?style=flat-square)](./app/tests/MGG.Pulse.Tests.Core)
 
 Windows desktop app that prevents session timeouts in remote environments (RDP, VDI, Citrix) by simulating minimal, non-intrusive user input only when the user is genuinely idle. Runs silently via System Tray, fully configurable, with a shell-based WinUI 3 UI.
 
@@ -179,29 +179,37 @@ dotnet run --project src/MGG.Pulse.UI/MGG.Pulse.UI.csproj
 
 ### CI-safe test partitioning
 
-Hosted CI runs only CI-safe coverage using trait filtering:
+Hosted CI runs only the physically isolated core project:
 
 ```powershell
 cd app
-dotnet test tests/MGG.Pulse.Tests.Unit --filter "Category!=Integration"
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj
 ```
 
-Tests that depend on WinRT/UI desktop state should be marked as local-only with `[Trait("Category", "Integration")]`.
+UI/WinRT-bound tests run locally from the isolated UI project:
+
+```powershell
+cd app
+dotnet test tests/MGG.Pulse.Tests.UI/MGG.Pulse.Tests.UI.csproj
+```
 
 ---
 
 ## Testing
 
 ```powershell
-# All unit tests
+# Core tests (CI-safe)
 cd app
-dotnet test tests/MGG.Pulse.Tests.Unit
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj
+
+# UI/WinRT tests (local-only)
+dotnet test tests/MGG.Pulse.Tests.UI/MGG.Pulse.Tests.UI.csproj
 
 # Verbose
-dotnet test tests/MGG.Pulse.Tests.Unit --logger "console;verbosity=detailed"
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --logger "console;verbosity=detailed"
 
 # Single test file / filter
-dotnet test tests/MGG.Pulse.Tests.Unit --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
 ```
 
 Tests cover Domain and Application layers using **xUnit + Moq**. Infrastructure and UI are excluded from automated tests (Windows-only Win32 adapters and WinUI 3 require a live desktop session).
@@ -300,7 +308,8 @@ dotnet restore MGG.Pulse.slnx
 dotnet build MGG.Pulse.slnx
 
 # 3. Run tests
-dotnet test tests/MGG.Pulse.Tests.Unit
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj
+dotnet test tests/MGG.Pulse.Tests.UI/MGG.Pulse.Tests.UI.csproj
 
 # 4. If adding new ports or use cases — update specs in openspec/
 ```
