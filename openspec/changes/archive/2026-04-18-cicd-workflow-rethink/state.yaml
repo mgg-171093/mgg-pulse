@@ -1,0 +1,25 @@
+change: 2026-04-18-cicd-workflow-rethink
+mode: hybrid
+updated_at: 2026-04-18
+phase: apply
+status: ready-for-verify
+last_apply_batch: full-redesign-implementation
+last_apply_focus: ci-cd-workflow-replacement-and-contracts
+artifacts:
+  proposal:
+    - proposal.md
+    - engram:sdd/2026-04-18-cicd-workflow-rethink/proposal
+  spec:
+    - specs/github-actions-ci/spec.md
+    - specs/github-actions-release/spec.md
+    - engram:sdd/2026-04-18-cicd-workflow-rethink/spec
+  design:
+    - design.md
+    - engram:sdd/2026-04-18-cicd-workflow-rethink/design
+  tasks:
+    - tasks.md
+    - engram:sdd/2026-04-18-cicd-workflow-rethink/tasks
+  apply_progress:
+    - apply-progress.md
+    - engram:sdd/2026-04-18-cicd-workflow-rethink/apply-progress
+next_recommended: sdd-verify

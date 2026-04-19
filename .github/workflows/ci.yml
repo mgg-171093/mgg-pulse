@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - ".github/workflows/**"
+      - ".github/scripts/**"
       - "app/Directory.Build.props"
       - "app/MGG.Pulse.slnx"
       - "app/src/**"
@@ -17,6 +18,7 @@ on:
       - main
     paths:
       - ".github/workflows/**"
+      - ".github/scripts/**"
       - "app/Directory.Build.props"
       - "app/MGG.Pulse.slnx"
       - "app/src/**"
@@ -32,7 +34,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Build and test validation
+    name: Hosted runner validation
     runs-on: windows-latest
 
     steps:
@@ -50,5 +52,5 @@ jobs:
       - name: Build
         run: dotnet build app/MGG.Pulse.slnx --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build
+      - name: Test (CI-safe only)
+        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build --filter "Category!=Integration"
