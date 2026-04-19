@@ -58,6 +58,9 @@ dotnet test tests/MGG.Pulse.Tests.Unit --logger "console;verbosity=detailed"
 
 # Filter by class
 dotnet test tests/MGG.Pulse.Tests.Unit --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
+
+# CI-safe only (exclude local-only WinRT/UI-bound tests)
+dotnet test tests/MGG.Pulse.Tests.Unit --filter "Category!=Integration"
 ```
 
 ---

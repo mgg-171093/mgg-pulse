@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - ".github/workflows/**"
+      - ".github/scripts/**"
       - "app/Directory.Build.props"
       - "app/MGG.Pulse.slnx"
       - "app/src/**"
@@ -14,6 +15,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - ".github/workflows/**"
+      - ".github/scripts/**"
+      - "app/Directory.Build.props"
+      - "app/MGG.Pulse.slnx"
+      - "app/src/**"
+      - "app/tests/**"
+      - "app/build/**"
 
 permissions:
   contents: read
@@ -39,14 +48,9 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Validate semver bump logic (dry-run)
+      - name: Validate version bump contract (dry-run)
         shell: pwsh
-        run: |
-          [xml]$props = Get-Content -Path "app/Directory.Build.props"
-          $current = [Version]$props.Project.PropertyGroup.Version
-          $next = [Version]::new($current.Major, $current.Minor, $current.Build + 1)
-          Write-Host "Current version: $($current.ToString())"
-          Write-Host "Next release version: $($next.ToString())"
+        run: pwsh -File .github/scripts/bump-version.ps1 -PropsPath app/Directory.Build.props -DryRun
 
       - name: Restore
         run: dotnet restore app/MGG.Pulse.slnx
@@ -54,14 +58,30 @@ jobs:
       - name: Build
         run: dotnet build app/MGG.Pulse.slnx --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build
+      - name: Test (CI-safe only)
+        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build --filter "Category!=Integration"
 
-      - name: Validate installer generation path (no publishing)
+      - name: Acquire Inno Setup
         shell: pwsh
         run: |
           choco install innosetup --no-progress -y
-          ./app/build/build.ps1 -SkipIco
+          if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Chocolatey failed. Falling back to direct Inno Setup installer download."
+            $installer = Join-Path $env:RUNNER_TEMP "innosetup-6.4.3.exe"
+            Invoke-WebRequest -Uri "https://files.jrsoftware.org/is/6/innosetup-6.4.3.exe" -OutFile $installer
+            Start-Process -FilePath $installer -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" -Wait
+          }
+
+      - name: Validate packaging path (dry-run)
+        shell: pwsh
+        run: ./app/build/build.ps1 -SkipIco
+
+      - name: Validate publish contract (dry-run)
+        shell: pwsh
+        run: |
+          $next = pwsh -File .github/scripts/bump-version.ps1 -PropsPath app/Directory.Build.props -DryRun | ConvertFrom-Json
+          $installer = Resolve-Path "app/build/output/MGGPulse-Setup-$($next.version).exe"
+          pwsh -File .github/scripts/publish-release.ps1 -Version $next.version -Tag $next.tag -InstallerPath $installer -Repo "${{ github.repository }}" -CommitSha "${{ github.sha }}" -LatestPath app/build/latest.json -PropsPath app/Directory.Build.props -DryRun
 
   release:
     name: Continuous delivery (push -> main)
@@ -84,21 +104,10 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Bump patch version in Directory.Build.props
+      - name: Bump patch version
         id: bump
         shell: pwsh
-        run: |
-          [xml]$props = Get-Content -Path "app/Directory.Build.props"
-          $current = [Version]$props.Project.PropertyGroup.Version
-          $next = [Version]::new($current.Major, $current.Minor, $current.Build + 1)
-
-          $props.Project.PropertyGroup.Version = $next.ToString()
-          $props.Project.PropertyGroup.AssemblyVersion = "{0}.{1}.{2}.0" -f $next.Major, $next.Minor, $next.Build
-          $props.Project.PropertyGroup.FileVersion = "{0}.{1}.{2}.0" -f $next.Major, $next.Minor, $next.Build
-          $props.Save((Resolve-Path "app/Directory.Build.props"))
-
-          "new_version=$($next.ToString())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "tag=v$($next.ToString())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+        run: pwsh -File .github/scripts/bump-version.ps1 -PropsPath app/Directory.Build.props
 
       - name: Restore
         run: dotnet restore app/MGG.Pulse.slnx
@@ -106,60 +115,26 @@ jobs:
       - name: Build
         run: dotnet build app/MGG.Pulse.slnx --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build
+      - name: Test (CI-safe only)
+        run: dotnet test app/tests/MGG.Pulse.Tests.Unit/MGG.Pulse.Tests.Unit.csproj --configuration Release --no-build --filter "Category!=Integration"
 
-      - name: Build installer
+      - name: Acquire Inno Setup
         shell: pwsh
         run: |
           choco install innosetup --no-progress -y
-          ./app/build/build.ps1 -SkipIco -Version "${{ steps.bump.outputs.new_version }}"
+          if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Chocolatey failed. Falling back to direct Inno Setup installer download."
+            $installer = Join-Path $env:RUNNER_TEMP "innosetup-6.4.3.exe"
+            Invoke-WebRequest -Uri "https://files.jrsoftware.org/is/6/innosetup-6.4.3.exe" -OutFile $installer
+            Start-Process -FilePath $installer -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" -Wait
+          }
 
-      - name: Compute installer SHA-256 and release metadata
-        id: metadata
+      - name: Build installer
+        shell: pwsh
+        run: ./app/build/build.ps1 -SkipIco -Version "${{ steps.bump.outputs.version }}"
+
+      - name: Publish release atomically
         shell: pwsh
         run: |
-          $version = "${{ steps.bump.outputs.new_version }}"
-          $tag = "${{ steps.bump.outputs.tag }}"
-          $installerName = "MGGPulse-Setup-$version.exe"
-          $installerPath = Resolve-Path "app/build/output/$installerName"
-          $sha256 = (Get-FileHash -Path $installerPath -Algorithm SHA256).Hash.ToLowerInvariant()
-          $downloadUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/$installerName"
-
-          "installer_path=$installerPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "installer_name=$installerName" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "sha256=$sha256" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "download_url=$downloadUrl" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-
-      - name: Create GitHub release and upload installer
-        shell: pwsh
-        run: |
-          $tag = "${{ steps.bump.outputs.tag }}"
-          $version = "${{ steps.bump.outputs.new_version }}"
-          $installerPath = "${{ steps.metadata.outputs.installer_path }}"
-
-          gh release create $tag $installerPath --title "MGG Pulse $tag" --target "${{ github.sha }}" --notes "Automated release for MGG Pulse $version."
-
-      - name: Update latest.json (raw-main model)
-        shell: pwsh
-        run: |
-          $latestPath = "app/build/latest.json"
-          $version = "${{ steps.bump.outputs.new_version }}"
-          $url = "${{ steps.metadata.outputs.download_url }}"
-          $sha = "${{ steps.metadata.outputs.sha256 }}"
-
-          $latest = Get-Content -Path $latestPath -Raw | ConvertFrom-Json
-          $latest.version = $version
-          $latest.url = $url
-          $latest.sha256 = $sha
-          $latest.notes = "Automated release via GitHub Actions."
-          $latest | ConvertTo-Json -Depth 10 | Set-Content -Path $latestPath -Encoding utf8
-
-      - name: Commit and push release metadata
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app/Directory.Build.props app/build/latest.json
-          git commit -m "chore(release): publish metadata for ${{ steps.bump.outputs.tag }} [skip ci] [skip release]"
-          git push origin main
+          $installerPath = Resolve-Path "app/build/output/MGGPulse-Setup-${{ steps.bump.outputs.version }}.exe"
+          pwsh -File .github/scripts/publish-release.ps1 -Version "${{ steps.bump.outputs.version }}" -Tag "${{ steps.bump.outputs.tag }}" -InstallerPath $installerPath -Repo "${{ github.repository }}" -CommitSha "${{ github.sha }}" -LatestPath app/build/latest.json -PropsPath app/Directory.Build.props

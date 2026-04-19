@@ -177,6 +177,17 @@ dotnet run --project src/MGG.Pulse.UI/MGG.Pulse.UI.csproj
 
 > **Note**: WinUI 3 requires the Windows App SDK to be installed on the dev machine. Run `winget install Microsoft.WindowsAppSDK` if needed.
 
+### CI-safe test partitioning
+
+Hosted CI runs only CI-safe coverage using trait filtering:
+
+```powershell
+cd app
+dotnet test tests/MGG.Pulse.Tests.Unit --filter "Category!=Integration"
+```
+
+Tests that depend on WinRT/UI desktop state should be marked as local-only with `[Trait("Category", "Integration")]`.
+
 ---
 
 ## Testing
