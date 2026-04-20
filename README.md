@@ -212,7 +212,25 @@ dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --logger "con
 dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --filter "FullyQualifiedName~CheckForUpdateUseCaseTests"
 ```
 
-Tests cover Domain and Application layers using **xUnit + Moq**. Infrastructure and UI are excluded from automated tests (Windows-only Win32 adapters and WinUI 3 require a live desktop session).
+`MGG.Pulse.Tests.Core` covers Domain, Application, and Infrastructure-safe logic using **xUnit + Moq**.
+`MGG.Pulse.Tests.UI` contains local-only UI/WinRT-bound tests and is intentionally excluded from hosted-runner discovery.
+
+## CI/CD (GitHub Actions source of truth)
+
+The repository uses two workflows with a clear contract:
+
+| Workflow | Trigger | Responsibility |
+|---|---|---|
+| `.github/workflows/ci.yml` | PRs to `develop`/`main`, pushes to `develop` | Hosted validation: restore, build, **Core tests only** |
+| `.github/workflows/release.yml` | PRs to `main`, pushes to `main` | PR release-readiness checks + real CD on `main` push |
+
+Release flow on push to `main`:
+1. `bump-version.ps1` increments patch version in `app/Directory.Build.props`.
+2. Build + CI-safe tests run on hosted Windows runner.
+3. Installer is produced via `app/build/build.ps1`.
+4. `publish-release.ps1` publishes the GitHub release asset (installer), updates `app/build/latest.json`, and commits release metadata back to `main`.
+
+`latest.json` remains committed in `main` and is consumed from the raw `main` URL. It is **not** uploaded as a release asset.
 
 ---
 
@@ -277,6 +295,10 @@ Config in `%AppData%` is **never overwritten on upgrade** — your settings surv
 | [`app/openspec/`](app/openspec/) | Devs / AI | SDD specs, proposals, designs, task lists |
 | [`app/README.md`](app/README.md) | App devs | Build, test, and project structure reference |
 | [`app/build/latest.json`](app/build/latest.json) | Release | Raw-main update manifest schema — auto-updated by `.github/workflows/release.yml` |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Devs / CI | Hosted-runner validation using `MGG.Pulse.Tests.Core` |
+| [`.github/workflows/release.yml`](.github/workflows/release.yml) | Devs / Release | PR release-readiness + continuous delivery on `main` |
+| [`.github/scripts/bump-version.ps1`](.github/scripts/bump-version.ps1) | Devs / Release | Version bump contract for release workflow |
+| [`.github/scripts/publish-release.ps1`](.github/scripts/publish-release.ps1) | Devs / Release | Atomic release publish + `latest.json` + metadata commit |
 | [`app/build/pulse.iss`](app/build/pulse.iss) | Build | Inno Setup installer script |
 | [`app/build/build.ps1`](app/build/build.ps1) | Build | Full release pipeline orchestrator |
 

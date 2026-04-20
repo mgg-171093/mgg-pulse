@@ -19,7 +19,7 @@ Generated: 2026-04-08
 |---|---|---|
 | `csharp-conventions` | Writing any C# code in this project | `.skills/csharp-conventions/SKILL.md` |
 | `winui3-patterns` | Writing XAML, ViewModels, WinUI 3 UI code | `.skills/winui3-patterns/SKILL.md` |
-| `xunit-testing` | Writing tests in MGG.Pulse.Tests.Unit | `.skills/xunit-testing/SKILL.md` |
+| `xunit-testing` | Writing tests in MGG.Pulse.Tests.Core or MGG.Pulse.Tests.UI | `.skills/xunit-testing/SKILL.md` |
 
 ---
 
