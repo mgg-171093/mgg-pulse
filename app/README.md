@@ -92,6 +92,24 @@ Automation is split into two workflows at repository root:
 - `.github/workflows/ci.yml` — validates PRs and `develop` pushes (restore, build, tests, workflow YAML checks).
 - `.github/workflows/release.yml` — runs release-readiness checks for PRs targeting `main`, and performs real release automation on pushes to `main`.
 
+Hosted runners execute only:
+
+```powershell
+dotnet test app/tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --configuration Release --no-build
+```
+
+Local developers should run both test projects from `app/`:
+
+```powershell
+dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj
+dotnet test tests/MGG.Pulse.Tests.UI/MGG.Pulse.Tests.UI.csproj
+```
+
+Release workflow ownership:
+
+- `.github/scripts/bump-version.ps1` owns version bump + output contract.
+- `.github/scripts/publish-release.ps1` owns release publish, `latest.json` mutation, and metadata commit/push.
+
 Release automation keeps the **raw-main manifest model**:
 
 - `app/build/latest.json` is updated and committed on `main`.
@@ -178,7 +196,7 @@ app/
 ├── build/
 │   ├── build.ps1                  ← Full release pipeline
 │   ├── pulse.iss                  ← Inno Setup installer script
-│   └── latest.json                ← Update manifest (fill before each release)
+│   └── latest.json                ← Update manifest committed on main (auto-updated by release workflow)
 │
 ├── tools/
 │   └── gen-icon.ps1               ← Generates icon.ico from logo-main.png

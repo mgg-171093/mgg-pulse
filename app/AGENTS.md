@@ -32,6 +32,31 @@ Tests.UI → UI + Domain + Application + Infrastructure (local-only)
 
 ---
 
+## CI/CD + Release Contract (CRITICAL)
+
+GitHub Actions is the source of truth for validation and delivery:
+
+- `.github/workflows/ci.yml`
+  - Trigger: push to `develop`, PRs to `develop` or `main`
+  - Hosted validation runs restore/build + **Core tests only**
+- `.github/workflows/release.yml`
+  - PR to `main`: release-readiness checks (dry-run only; no publish/mutation)
+  - Push to `main`: continuous delivery (real version bump, installer build, release publish)
+
+Test boundary policy:
+
+- `MGG.Pulse.Tests.Core` is CI-safe and is the only test project executed on hosted runners.
+- `MGG.Pulse.Tests.UI` is local-only for UI/WinRT-bound behavior.
+
+Release scripts are authoritative:
+
+- `.github/scripts/bump-version.ps1` owns version increment + output contract.
+- `.github/scripts/publish-release.ps1` owns release asset publishing, `app/build/latest.json` update, and metadata commit/push.
+
+`app/build/latest.json` MUST remain committed on `main` and MUST NOT be uploaded as a GitHub Release asset.
+
+---
+
 ## Key Domain Concepts
 
 | Concept | Type | Description |

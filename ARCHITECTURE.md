@@ -43,9 +43,14 @@ MGG Pulse follows **Hexagonal (Ports & Adapters) + MVVM** architecture. Dependen
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
-│  MGG.Pulse.Tests.Unit  (xUnit + Moq)                             │
-│  Tests Domain and Application layers only.                       │
-│  Infrastructure and UI are NOT unit-tested (Win32 / WinUI 3).   │
+│  MGG.Pulse.Tests.Core  (xUnit + Moq, CI-safe)                    │
+│  Tests Domain + Application + Infrastructure-safe logic.         │
+│  No WinUI/WinRT-bound discovery on hosted runners.               │
+└──────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────┐
+│  MGG.Pulse.Tests.UI  (xUnit + Moq, local-only)                   │
+│  Tests UI/WinRT-bound behavior and integration seams locally.    │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -54,7 +59,8 @@ MGG Pulse follows **Hexagonal (Ports & Adapters) + MVVM** architecture. Dependen
 ```
 UI         → Application → Domain
 Infrastructure           → Domain  (implements ports)
-Tests.Unit → Application → Domain  (mocks Infrastructure)
+Tests.Core → Domain + Application + Infrastructure (no UI references)
+Tests.UI   → UI + Domain + Application + Infrastructure (local-only)
 ```
 
 **Domain MUST have zero external NuGet or project references.**
@@ -224,6 +230,35 @@ Commit `app/build/latest.json` on `main` for every release update. The auto-upda
 
 ---
 
+## CI/CD Delivery Pipeline (GitHub Actions)
+
+```
+CI workflow: .github/workflows/ci.yml
+  Trigger: push -> develop, PR -> develop/main
+  Runner: windows-latest
+  Steps: restore -> build -> test Core project only
+
+Release workflow: .github/workflows/release.yml
+  PR -> main (release-readiness):
+    - bump-version.ps1 -DryRun
+    - restore -> build -> test Core project only
+    - installer build dry-run
+    - publish-release.ps1 -DryRun
+
+  push -> main (continuous delivery):
+    - bump-version.ps1 (real mutation)
+    - restore -> build -> test Core project only
+    - installer build
+    - publish-release.ps1 (real publish)
+      -> creates GitHub release with installer asset
+      -> updates app/build/latest.json
+      -> commits and pushes release metadata to main
+```
+
+`bump-version.ps1` and `publish-release.ps1` are the owners of non-trivial release logic and exit-code contracts.
+
+---
+
 ## Data Flow — Config Persistence
 
 ```
@@ -296,7 +331,7 @@ mgg-pulse/
     ├── build/
     │   ├── build.ps1                   ← Full release pipeline (publish → icon → Inno Setup)
     │   ├── pulse.iss                   ← Inno Setup installer script
-    │   └── latest.json                 ← Update manifest schema (fill before each release)
+    │   └── latest.json                 ← Update manifest committed on main (auto-updated by release workflow)
     │
     ├── tools/
     │   └── gen-icon.ps1                ← Converts logo-main.png → icon.ico (ImageMagick)
@@ -337,10 +372,12 @@ mgg-pulse/
     │       └── Windows/                ← MainWindow, SplashWindow
     │
     ├── tests/
-    │   └── MGG.Pulse.Tests.Unit/
-    │       └── Application/
-    │           └── Updates/            ← CheckForUpdateUseCaseTests, UpdateManifestValidationTests,
-    │                                      UpdateHostedServiceTests
+    │   ├── MGG.Pulse.Tests.Core/
+    │   │   ├── Domain/
+    │   │   ├── Application/
+    │   │   └── Infrastructure/         ← Includes workflow/scripts contract tests (CI-safe)
+    │   └── MGG.Pulse.Tests.UI/
+    │       └── UI/                     ← WinRT/UI-bound local-only tests
     │
     └── openspec/                       ← SDD artifacts (specs, changes, config)
         ├── config.yaml
