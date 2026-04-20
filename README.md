@@ -219,6 +219,8 @@ dotnet test tests/MGG.Pulse.Tests.Core/MGG.Pulse.Tests.Core.csproj --filter "Ful
 
 The repository uses two workflows with a clear contract:
 
+> Maintainer note: a documentation-only commit in this section is enough to exercise the full `develop -> main -> release` pipeline when validating the auto-updater end-to-end.
+
 | Workflow | Trigger | Responsibility |
 |---|---|---|
 | `.github/workflows/ci.yml` | PRs to `develop`/`main`, pushes to `develop` | Hosted validation: restore, build, **Core tests only** |
