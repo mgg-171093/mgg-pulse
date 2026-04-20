@@ -1,0 +1,25 @@
+change: 2026-04-19-startup-updater-prompt-fix
+mode: hybrid
+updated_at: 2026-04-20
+phase: apply
+status: ready-for-verify
+last_apply_batch: manual-no-applicable-update-proof
+last_apply_focus: behavioral-proof-manual-about-no-install-without-applicable-update
+artifacts:
+  proposal:
+    - proposal.md
+    - engram:sdd/2026-04-19-startup-updater-prompt-fix/proposal
+  spec:
+    - specs/startup-update-check/spec.md
+    - specs/manual-update-check/spec.md
+    - engram:sdd/2026-04-19-startup-updater-prompt-fix/spec
+  design:
+    - design.md
+    - engram:sdd/2026-04-19-startup-updater-prompt-fix/design
+  tasks:
+    - tasks.md
+    - engram:sdd/2026-04-19-startup-updater-prompt-fix/tasks
+  apply_progress:
+    - apply-progress.md
+    - engram:sdd/2026-04-19-startup-updater-prompt-fix/apply-progress
+next_recommended: sdd-verify

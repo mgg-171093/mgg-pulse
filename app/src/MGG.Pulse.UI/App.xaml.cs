@@ -11,11 +11,13 @@ using MGG.Pulse.Infrastructure.Update;
 using MGG.Pulse.Infrastructure.Win32;
 using MGG.Pulse.UI.Diagnostics;
 using MGG.Pulse.UI.Services;
+using MGG.Pulse.UI.Updates;
 using MGG.Pulse.UI.ViewModels;
 using MGG.Pulse.UI.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace MGG.Pulse.UI;
 
@@ -28,6 +30,7 @@ public partial class App : Microsoft.UI.Xaml.Application
     private DispatcherQueue? _dispatcherQueue;
     private bool _isExiting;
     private UpdateHostedService? _updateService;
+    private readonly UpdateApplyCoordinator _updateApplyCoordinator;
 
     public App()
     {
@@ -38,6 +41,10 @@ public partial class App : Microsoft.UI.Xaml.Application
         };
         InitializeComponent();
         Services = ConfigureServices();
+        _updateApplyCoordinator = new UpdateApplyCoordinator(
+            promptAsync: ShowUpdatePromptAsync,
+            applyAsync: ApplyUpdateAndExitAsync,
+            notifyDeferred: ShowDeferredUpdateNotification);
     }
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
@@ -117,6 +124,16 @@ public partial class App : Microsoft.UI.Xaml.Application
         {
             app.ExitApp();
         }
+    }
+
+    internal static Task<bool> TryApplyAvailableUpdateAsync(UpdateCheckResult result)
+    {
+        if (Current is App app)
+        {
+            return app._updateApplyCoordinator.TryApplyAvailableUpdateAsync(result, showPrompt: true, notifyWhenDeferred: false);
+        }
+
+        return Task.FromResult(false);
     }
 
     private void ApplyThemeToOpenWindows(string resolvedTheme)
@@ -235,28 +252,57 @@ public partial class App : Microsoft.UI.Xaml.Application
     {
         _dispatcherQueue?.TryEnqueue(async () =>
         {
-            if (ApplyUpdateUseCase.CanApply(result))
-            {
-                var applyUseCase = Services.GetRequiredService<ApplyUpdateUseCase>();
-                var applyResult  = await applyUseCase.ExecuteAsync(
-                    result.DownloadUrl!,
-                    result.Sha256!,
-                    CancellationToken.None);
-
-                if (applyResult.IsSuccess)
-                {
-                    // Installer is running — exit so Inno Setup can replace the executable.
-                    ExitApp();
-                    return;
-                }
-            }
-
-            // Fallback: no download data, or download/verify failed → show balloon notification.
-            var tray = Services.GetService<ITrayService>();
-            tray?.ShowNotification(
-                "Update Available",
-                $"MGG Pulse {result.AvailableVersion} is ready. Restart to install.");
+            await _updateApplyCoordinator.TryApplyAvailableUpdateAsync(result, showPrompt: true, notifyWhenDeferred: true);
         });
+    }
+
+    private async Task<UpdatePromptDecision> ShowUpdatePromptAsync(UpdateCheckResult result)
+    {
+        var xamlRoot = _mainWindow?.Content?.XamlRoot;
+        if (xamlRoot is null)
+        {
+            return UpdatePromptDecision.Unavailable;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = xamlRoot,
+            Title = "Actualización disponible",
+            Content = $"Se detectó la versión {result.AvailableVersion}. ¿Querés actualizar ahora?",
+            PrimaryButtonText = "Actualizar",
+            CloseButtonText = "Cancelar",
+            DefaultButton = ContentDialogButton.Primary
+        };
+
+        var decision = await dialog.ShowAsync();
+        return decision == ContentDialogResult.Primary
+            ? UpdatePromptDecision.Update
+            : UpdatePromptDecision.Cancel;
+    }
+
+    private async Task<bool> ApplyUpdateAndExitAsync(UpdateCheckResult result)
+    {
+        var applyUseCase = Services.GetRequiredService<ApplyUpdateUseCase>();
+        var applyResult = await applyUseCase.ExecuteAsync(
+            result.DownloadUrl!,
+            result.Sha256!,
+            CancellationToken.None);
+
+        if (!applyResult.IsSuccess)
+        {
+            return false;
+        }
+
+        ExitApp();
+        return true;
+    }
+
+    private void ShowDeferredUpdateNotification(UpdateCheckResult result)
+    {
+        var tray = Services.GetService<ITrayService>();
+        tray?.ShowNotification(
+            "Actualización disponible",
+            $"Hay una actualización a la versión {result.AvailableVersion}. Podés instalarla desde Acerca de o en el próximo inicio.");
     }
 
     private static IServiceProvider ConfigureServices()
