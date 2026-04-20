@@ -66,6 +66,14 @@
                         Content="Buscar actualizaciones"
                         Style="{StaticResource SecondaryButtonStyle}" />
 
+                    <Button
+                        HorizontalAlignment="Stretch"
+                        Visibility="{x:Bind ViewModel.InstallButtonVisibility, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.InstallUpdateCommand, Mode=OneWay}"
+                        IsEnabled="{x:Bind ViewModel.CanInstallUpdate, Mode=OneWay}"
+                        Content="Instalar ahora"
+                        Style="{StaticResource PrimaryButtonStyle}" />
+
                     <TextBlock
                         HorizontalAlignment="Center"
                         Foreground="{ThemeResource TextSecondaryBrush}"
